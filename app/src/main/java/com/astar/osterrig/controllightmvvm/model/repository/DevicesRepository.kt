@@ -7,4 +7,5 @@ interface DevicesRepository {
 
     fun getDevices(): Observable<List<DeviceModel>>
     fun getDeviceByMacAddress(macAddress: String): Observable<DeviceModel?>
+    fun addDevice(device: DeviceModel)
 }

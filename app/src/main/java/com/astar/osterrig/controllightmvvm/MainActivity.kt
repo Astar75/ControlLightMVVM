@@ -10,6 +10,7 @@ import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.view.BaseActivity
 import com.astar.osterrig.controllightmvvm.view.MainInteractor
 import com.astar.osterrig.controllightmvvm.view.MainViewModel
+import com.astar.osterrig.controllightmvvm.view.dialogs.AddDeviceDialog
 
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
@@ -28,6 +29,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
         binding.btnByMac.setOnClickListener { getDeviceByMacAddress() }
         binding.btnGetAllDevices.setOnClickListener { getAllDevices() }
+        binding.btnAddDevice.setOnClickListener { openAddDeviceDialog() }
     }
 
     private fun getDeviceByMacAddress() {
@@ -39,6 +41,17 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
     private fun getAllDevices() {
         model.getDevices().observe(this, observer)
+    }
+
+    private fun openAddDeviceDialog() {
+        val dialog = AddDeviceDialog.newInstance()
+        dialog.show(supportFragmentManager, "add_dialog")
+        dialog.addCallback(object : AddDeviceDialog.CallbackListener {
+
+            override fun onClick(device: DeviceModel) {
+                model.addDevice(device)
+            }
+        })
     }
 
     override fun renderData(dataModel: AppState) {

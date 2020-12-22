@@ -14,4 +14,8 @@ class DeviceModelDataSourceLocal(
     override fun getDeviceByMacAddress(macAddress: String): Observable<DeviceModel?> {
         return provider.getDeviceByMacAddress(macAddress)
     }
+
+    override fun addDevice(device: DeviceModel) {
+        provider.addDevice(device)
+    }
 }

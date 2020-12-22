@@ -13,4 +13,8 @@ class RepositoryImplementation(private val dataSource: DeviceModelDataSource) : 
     override fun getDeviceByMacAddress(macAddress: String): Observable<DeviceModel?> {
         return dataSource.getDeviceByMacAddress(macAddress)
     }
+
+    override fun addDevice(device: DeviceModel) {
+        dataSource.addDevice(device)
+    }
 }

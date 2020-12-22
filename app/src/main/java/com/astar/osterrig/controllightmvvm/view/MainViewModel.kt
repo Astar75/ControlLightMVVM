@@ -2,6 +2,7 @@ package com.astar.osterrig.controllightmvvm.view
 
 import androidx.lifecycle.LiveData
 import com.astar.osterrig.controllightmvvm.model.data.AppState
+import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.model.datasource.DeviceModelDataSourceLocal
 import com.astar.osterrig.controllightmvvm.model.repository.RepositoryImplementation
 import com.astar.osterrig.controllightmvvm.viewmodel.BaseViewModel
@@ -55,6 +56,10 @@ class MainViewModel(
             override fun onComplete() {
             }
         }
+    }
+
+    fun addDevice(device: DeviceModel) {
+        interactor.addDevice (device)
     }
 
 }

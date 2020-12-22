@@ -28,4 +28,9 @@ class RoomDatabaseImplementation {
             Observable.just(DeviceModel("", "", ""))
     }
 
+    fun addDevice(device: DeviceModel) {
+        if (!devices.contains(device))
+            devices.add(device)
+    }
+
 }
