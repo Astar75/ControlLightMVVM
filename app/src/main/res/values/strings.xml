@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ControlLightMVVM</string>
+    <string name="osterrig_db">Osterrig.db</string>
+</resources>
