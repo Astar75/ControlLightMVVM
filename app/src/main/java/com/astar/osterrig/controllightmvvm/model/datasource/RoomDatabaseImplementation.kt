@@ -3,7 +3,7 @@ package com.astar.osterrig.controllightmvvm.model.datasource
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import io.reactivex.Observable
 
-class RoomDatabaseImplementation {
+class RoomDatabaseImplementation: DeviceModelDataSource {
 
     private val devices = mutableListOf(
         DeviceModel("00:00:AA:10:01", "Osterrig WALS+ (001)", ""),
@@ -14,11 +14,11 @@ class RoomDatabaseImplementation {
         DeviceModel("56:00:BC:18:31", "Osterrig RGB (010)", "")
     )
 
-    fun getDevices(): Observable<List<DeviceModel>> {
+    override fun getDevices(): Observable<List<DeviceModel>> {
         return Observable.just(devices)
     }
 
-    fun getDeviceByMacAddress(macAddress: String): Observable<DeviceModel?> {
+    override fun getDeviceByMacAddress(macAddress: String): Observable<DeviceModel?> {
         val device = devices.firstOrNull {
             it.macAddress == macAddress
         }
@@ -28,7 +28,7 @@ class RoomDatabaseImplementation {
             Observable.just(DeviceModel("", "", ""))
     }
 
-    fun addDevice(device: DeviceModel) {
+    override fun addDevice(device: DeviceModel) {
         if (!devices.contains(device))
             devices.add(device)
     }

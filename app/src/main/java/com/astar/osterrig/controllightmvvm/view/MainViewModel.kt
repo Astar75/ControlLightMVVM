@@ -10,11 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 
-class MainViewModel(
-    private val interactor: MainInteractor = MainInteractor(
-        RepositoryImplementation(DeviceModelDataSourceLocal())
-    )
-) : BaseViewModel<AppState>() {
+class MainViewModel(private val interactor: MainInteractor) : BaseViewModel<AppState>() {
 
     private var appState: AppState? = null
 
@@ -59,7 +55,7 @@ class MainViewModel(
     }
 
     fun addDevice(device: DeviceModel) {
-        interactor.addDevice (device)
+        interactor.addDevice(device)
     }
 
 }
