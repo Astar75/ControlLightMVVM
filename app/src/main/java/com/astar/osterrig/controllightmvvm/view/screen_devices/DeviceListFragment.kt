@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.astar.osterrig.controllightmvvm.databinding.FragmentDevicesBinding
+import com.astar.osterrig.controllightmvvm.model.data.AppState
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -19,6 +20,7 @@ internal class DeviceListFragment : BaseFragment() {
     ): View {
         mBinding = FragmentDevicesBinding.inflate(layoutInflater, container, false)
         initViews()
+        renderData()
         return mBinding.root
     }
 
@@ -28,6 +30,25 @@ internal class DeviceListFragment : BaseFragment() {
 
     private fun startScan() {
         mModel.startScan()
+    }
+
+    private fun renderData() {
+        mModel.subscribe().observe(viewLifecycleOwner, { appState ->
+            when(appState) {
+                is AppState.Success -> {
+                    val data = appState.data
+                    var string = ""
+                    for (dev in data) {
+                        string += "Name: ${dev.name}, address: ${dev.macAddress}\n"
+                    }
+                    showToastMessage(string)
+                }
+                is AppState.Error -> {
+                    val data = appState.error
+                    showToastMessage(data.message)
+                }
+            }
+        })
     }
 
     companion object {
