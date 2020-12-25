@@ -9,4 +9,6 @@
     <string name="devices_no_sabers">No sabers</string>
     <string name="groups_no_groups">No groups</string>
     <string name="toast_bt_must_be_enabled">Для работы приложения необходимо включить Bluetooth</string>
+    <string name="title_tab_sabers">Sabers</string>
+    <string name="title_tab_groups">Groups</string>
 </resources>

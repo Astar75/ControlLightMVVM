@@ -17,6 +17,8 @@ internal class MainActivity : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mNavigationManager: NavigationManager
+    val navigationManager: NavigationManager
+        get() = mNavigationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +42,7 @@ internal class MainActivity : AppCompatActivity() {
         mNavigationManager.detachManager()
     }
 
-    fun checkLocationPermissions() {
+    private fun checkLocationPermissions() {
         when (getLocationPermissionStatus(true)) {
             is LocationPermissionStatus.Granted -> {
                 Log.d(MainActivity::class.java.simpleName, "Permission granted")
@@ -71,7 +73,8 @@ internal class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_ENABLE_BLUETOOTH && resultCode == RESULT_CANCELED) {
-            Toast.makeText(this, getString(R.string.toast_bt_must_be_enabled), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.toast_bt_must_be_enabled), Toast.LENGTH_LONG)
+                .show()
             enableBluetooth()
         }
     }
