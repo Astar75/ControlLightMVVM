@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">ControlLightMVVM</string>
     <string name="osterrig_db">Osterrig.db</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="desc_text_search_button">Search</string>
+    <string name="desc_text_add_group_button">Add group</string>
+    <string name="devices_no_sabers">No sabers</string>
+    <string name="groups_no_groups">No groups</string>
+    <string name="toast_bt_must_be_enabled">Для работы приложения необходимо включить Bluetooth</string>
 </resources>
