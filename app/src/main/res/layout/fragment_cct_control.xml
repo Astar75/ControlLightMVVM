@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.screen_rgb_control.RgbControlFragment">
+
+    <FrameLayout
+        android:id="@+id/containerTopControlPanel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_control_panel_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/topControlPanel"
+            layout="@layout/include_top_control_panel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewCctColorList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_margin="@dimen/margin_default"
+        app:layout_constraintBottom_toTopOf="@id/containerLightnessControl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/containerTopControlPanel" />
+
+    <LinearLayout
+        android:id="@+id/containerLightnessControl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_default"
+        android:layout_marginEnd="@dimen/margin_default"
+        android:layout_marginBottom="@dimen/margin_default"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/containerBottomNavPanel"
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewCctColorList">
+
+        <TextView
+            android:id="@+id/tvLightness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lightness: 0%" />
+
+        <SeekBar
+            android:id="@+id/sbLightness"
+            android:max="255"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvTint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tint: 0%" />
+
+        <SeekBar
+            android:id="@+id/sbTint"
+            android:max="100"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/containerBottomNavPanel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_nav_panel_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include
+            android:id="@+id/bottomNavPanel"
+            layout="@layout/include_bottom_nav_panel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

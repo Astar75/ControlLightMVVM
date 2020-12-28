@@ -9,9 +9,9 @@ import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 
 @Database(entities = [DeviceModel::class], version = 1, exportSchema = false)
-abstract class AppDatabase: RoomDatabase() {
+internal abstract class AppDatabase: RoomDatabase() {
 
-    abstract fun getDevicesDao(): DevicesDao
+    abstract fun getDevicesDao(): DeviceModelDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null
@@ -24,7 +24,7 @@ abstract class AppDatabase: RoomDatabase() {
 
         private fun buildDatabase(context: Context): AppDatabase {
             return Room.databaseBuilder(context, AppDatabase::class.java, context.getString(R.string.osterrig_db))
-                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
                 .addCallback(
                     object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {

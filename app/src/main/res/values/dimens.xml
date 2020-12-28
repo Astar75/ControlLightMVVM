@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_nav_text_size">14sp</dimen>
+    <dimen name="bottom_nav_panel_height">55dp</dimen>
+    <dimen name="top_nav_panel_height">65dp</dimen>
+    <dimen name="top_control_panel_icon_size">45dp</dimen>
+    <dimen name="top_control_panel_height">65dp</dimen>
+    <dimen name="margin_default">16dp</dimen>
+    <dimen name="button_action_size">65dp</dimen>
+    <dimen name="no_data_text_size">24sp</dimen>
+    <dimen name="minimal_margin">8dp</dimen>
+
+</resources>

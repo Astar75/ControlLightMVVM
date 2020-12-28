@@ -2,7 +2,7 @@ package com.astar.osterrig.controllightmvvm.model.data
 
 sealed class AppState {
 
-    data class Success<T>(val data: T?) : AppState()
+    data class Success(val data: List<DeviceModel>) : AppState()
     data class Error(val error: Throwable) : AppState()
-    data class Loading(val progress: Int?) : AppState()
+    object Loading : AppState()
 }
