@@ -3,10 +3,13 @@ package com.astar.osterrig.controllightmvvm.model.datasource.bluetooth_scanner
 import android.bluetooth.BluetoothDevice
 import android.os.Handler
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
@@ -27,7 +30,7 @@ internal class BluetoothScannerDataSourceImplementation : BluetoothScannerDataSo
     private val mScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
-            if (result.device.name != null && result.device.name.startsWith("Osterrig")) {
+            if (result.device.name != null && result.device.name.startsWith(SCAN_PREFIX_NAME)) {
                 addDeviceToList(result.device)
             }
         }
@@ -50,7 +53,7 @@ internal class BluetoothScannerDataSourceImplementation : BluetoothScannerDataSo
     }
 
     private val mSearchDevicesFlow: Flow<List<BluetoothDevice>> = flow {
-        while (true) {
+        while (mIsScanning) {
             emit(mFoundedDeviceList)
             delay(SEND_DEVICES_DURATION)
         }
@@ -83,6 +86,7 @@ internal class BluetoothScannerDataSourceImplementation : BluetoothScannerDataSo
 
     companion object {
         const val TAG = "BluetoothScanner"
+        const val SCAN_PREFIX_NAME = "Osterrig"
         const val SCAN_DURATION = 20000L
         const val SEND_DEVICES_DURATION = 1000L
     }

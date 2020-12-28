@@ -1,14 +1,11 @@
 package com.astar.osterrig.controllightmvvm.view.screen_devices
 
 import android.bluetooth.BluetoothDevice
-import com.astar.osterrig.controllightmvvm.model.repository.DeviceModelRepository
 import kotlinx.coroutines.flow.Flow
 
-class DeviceListInteractor(private val deviceModelRepository: DeviceModelRepository) {
+interface DeviceListInteractor {
 
-    fun startScan() { deviceModelRepository.startScan() }
-
-    fun searchDeviceListLiveData(): Flow<List<BluetoothDevice>> = deviceModelRepository.searchDevices()
-
-    fun getSearchState(): Boolean = deviceModelRepository.getSearchState()
+    fun startScan()
+    fun searchDevicesFlow(): Flow<List<BluetoothDevice>>
+    fun getSearchState(): Boolean
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/topControlPanel"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/top_control_panel_height"
+    android:background="@color/top_control_panel">
+
+    <ImageView
+        android:id="@+id/ivDeviceList"
+        android:layout_width="@dimen/top_control_panel_icon_size"
+        android:layout_height="@dimen/top_control_panel_icon_size"
+        android:layout_marginStart="@dimen/margin_default"
+        android:contentDescription="@string/desc_device_list"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_btn_device_list" />
+
+    <ImageView
+        android:id="@+id/ivPower"
+        android:layout_width="@dimen/top_control_panel_icon_size"
+        android:layout_height="@dimen/top_control_panel_icon_size"
+        android:contentDescription="@string/desc_power_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivBatteryView"
+        app:layout_constraintStart_toEndOf="@+id/ivDeviceList"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_btn_power_off" />
+
+    <ImageView
+        android:id="@+id/ivBatteryView"
+        android:layout_width="@dimen/top_control_panel_icon_size"
+        android:layout_height="@dimen/top_control_panel_icon_size"
+        android:layout_marginEnd="@dimen/margin_default"
+        android:contentDescription="@string/desc_battery_level"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_battery_value" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

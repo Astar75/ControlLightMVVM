@@ -6,7 +6,7 @@ import com.astar.osterrig.controllightmvvm.model.datasource.persistence.DeviceMo
 import com.astar.osterrig.controllightmvvm.model.datasource.persistence.AppDatabase
 import com.astar.osterrig.controllightmvvm.model.repository.DeviceModelRepository
 import com.astar.osterrig.controllightmvvm.model.repository.DeviceModelRepositoryImplementation
-import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListInteractor
+import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListInteractorImplementation
 import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -30,6 +30,6 @@ val application = module {
 val mainScreen = module {
     //factory { MainInteractor(get(named(NAME_LOCAL))) }
     //factory { MainViewModel(get()) }
-    factory { DeviceListInteractor(get(named(NAME_LOCAL))) }
+    factory { DeviceListInteractorImplementation(get(named(NAME_LOCAL))) }
     factory { DeviceListViewModel(get()) }
 }

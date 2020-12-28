@@ -4,20 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
+import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentDevicesBinding
 import com.astar.osterrig.controllightmvvm.model.data.AppState
+import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
+import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.view.adapters.DeviceListAdapter
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 
 internal class DeviceListFragment : BaseFragment() {
 
+    override val mModel: DeviceListViewModel by viewModel()
+
     private lateinit var mBinding: FragmentDevicesBinding
-    private val mModel: DeviceListViewModel by viewModel()
     private lateinit var mAdapter: DeviceListAdapter
 
     override fun onCreateView(
@@ -25,26 +28,53 @@ internal class DeviceListFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         mBinding = FragmentDevicesBinding.inflate(layoutInflater, container, false)
-        initViews()
+        initView()
         renderData()
         return mBinding.root
     }
 
-    private fun initViews() {
-        mBinding.topNavPanel.btnOne.text = getString(R.string.title_tab_sabers)
-        mBinding.topNavPanel.btnTwo.text = getString(R.string.title_tab_groups)
+    override fun onStart() {
+        super.onStart()
+        mAdapter.setOnItemClickListener(adapterItemClickListener)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mAdapter.removeOnItemClickListener()
+    }
+
+    private val adapterItemClickListener = object : DeviceListAdapter.OnItemClickListener {
+        override fun onItemClick(deviceModel: DeviceModel) {
+            navigateToRgbControl(deviceModel, true)
+        }
+
+        override fun onItemActionConnectClick(deviceModel: DeviceModel) {
+            showToastMessage("Action connect")
+        }
+
+        override fun onItemActionPowerClick(deviceModel: DeviceModel) {
+            showToastMessage("Action power")
+        }
+    }
+
+    private fun initView() {
         mAdapter = DeviceListAdapter()
-        mBinding.recyclerDevices.adapter = mAdapter
-        mBinding.recyclerDevices.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                RecyclerView.VERTICAL
+        with(mBinding.topNavPanel) {
+            btnOne.text = getString(R.string.title_tab_sabers)
+            btnTwo.text = getString(R.string.title_tab_groups)
+            btnOne.setBackgroundTint(R.color.button_active_color)
+            btnTwo.setOnClickListener { navigateToGroupList() }
+        }
+        with(mBinding) {
+            recyclerDevices.adapter = mAdapter
+            recyclerDevices.addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    RecyclerView.VERTICAL
+                )
             )
-        )
-        mBinding.btnSearch.setOnClickListener { startScan() }
-        mBinding.topNavPanel.btnOne.highlightColor = context.getColor(R.color.button_active_color)
-        mBinding.topNavPanel.btnOne.setOnClickListener { navigateToDeviceList() }
-        mBinding.topNavPanel.btnTwo.setOnClickListener { navigateToGroupList() }
+            btnSearch.setOnClickListener { startScan() }
+        }
     }
 
     private fun startScan() {

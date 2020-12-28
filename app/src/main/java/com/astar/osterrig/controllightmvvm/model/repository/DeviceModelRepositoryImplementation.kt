@@ -2,11 +2,9 @@ package com.astar.osterrig.controllightmvvm.model.repository
 
 import android.bluetooth.BluetoothDevice
 import androidx.lifecycle.LiveData
-import com.astar.osterrig.controllightmvvm.model.data.AppState
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.model.datasource.bluetooth_scanner.BluetoothScannerDataSource
 import com.astar.osterrig.controllightmvvm.model.datasource.persistence.DeviceModelDataSource
-import io.reactivex.Observable
 import kotlinx.coroutines.flow.Flow
 
 internal class DeviceModelRepositoryImplementation(
@@ -38,6 +36,7 @@ internal class DeviceModelRepositoryImplementation(
     override fun startScan() {
         bluetoothScannerDataSource.startScan()
     }
+
 
     override fun stopScan() {
         bluetoothScannerDataSource.stopScan()
