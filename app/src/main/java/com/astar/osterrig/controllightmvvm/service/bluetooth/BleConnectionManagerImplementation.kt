@@ -3,6 +3,7 @@ package com.astar.osterrig.controllightmvvm.service.bluetooth
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.util.Log
+import com.astar.osterrig.controllightmvvm.model.data.CctColorEntity
 import no.nordicsemi.android.ble.observer.ConnectionObserver
 
 class BleConnectionManagerImplementation(val context: Context) :
@@ -10,9 +11,17 @@ class BleConnectionManagerImplementation(val context: Context) :
 
     private val bleManagers: MutableMap<BluetoothDevice, SaberBleManager> = mutableMapOf()
     private val managedDevices: MutableList<BluetoothDevice> = mutableListOf()
+    private var callback: BleConnectionManagerCallback? = null
+
+    override fun addCallback(callback: BleConnectionManagerCallback) {
+        this.callback = callback
+    }
+
+    override fun removeCallback() {
+        this.callback = null
+    }
 
     override fun connect(device: BluetoothDevice) {
-
         if (managedDevices.contains(device))
             return
         managedDevices.add(device)
@@ -41,6 +50,13 @@ class BleConnectionManagerImplementation(val context: Context) :
         }
     }
 
+    override fun disconnectAll() {
+        for (manager in bleManagers) {
+            manager.value.disconnectDevice()
+        }
+        bleManagers.clear()
+    }
+
     override fun setLightness(device: BluetoothDevice, lightness: Int) {
         val manager = bleManagers[device]
         manager?.let {
@@ -48,10 +64,24 @@ class BleConnectionManagerImplementation(val context: Context) :
         }
     }
 
-    override fun setColor(device: BluetoothDevice, color: String) {
+    override fun setColor(device: BluetoothDevice, color: Int) {
         val manager = bleManagers[device]
         manager?.let {
             if (it.isConnected) it.setColor(color)
+        }
+    }
+
+    override fun setColor(device: BluetoothDevice, colorModel: CctColorEntity) {
+        val manager = bleManagers[device]
+        manager?.let {
+            if (it.isConnected) it.setColor(colorModel)
+        }
+    }
+
+    override fun setFunction(device: BluetoothDevice?, typeSaber: Int, command: String) {
+        val manager = bleManagers[device]
+        manager?.let {
+            if (it.isConnected) it.setFunction(typeSaber, command)
         }
     }
 
@@ -61,6 +91,7 @@ class BleConnectionManagerImplementation(val context: Context) :
 
     override fun onDeviceConnected(device: BluetoothDevice) {
         Log.d(TAG, "onDeviceConnected: Соединение успешно ${device.address}")
+        callback?.onConnected(device)
     }
 
     override fun onDeviceFailedToConnect(device: BluetoothDevice, reason: Int) {
@@ -76,7 +107,7 @@ class BleConnectionManagerImplementation(val context: Context) :
     }
 
     override fun onDeviceDisconnected(device: BluetoothDevice, reason: Int) {
-
+        callback?.onDisconnected(device)
     }
 
     companion object {

@@ -14,7 +14,7 @@
     <style name="ButtonActionStyle">
         <item name="android:layout_width">@dimen/button_action_size</item>
         <item name="android:layout_height">@dimen/button_action_size</item>
-        <item name="android:layout_margin">@dimen/margin_default</item>
+        <item name="android:layout_margin">@dimen/default_margin</item>
     </style>
 
     <style name="NoDataContentTextStyle">
@@ -22,5 +22,13 @@
         <item name="android:textSize">@dimen/no_data_text_size</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="SeekBarLightness">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/seekbar_default_height</item>
+        <item name="android:progressDrawable">@drawable/drawable_default_seekbar</item>
+        <item name="android:thumb">@drawable/drawable_default_seekbar_thumb</item>
+        <item name="android:splitTrack">false</item>
     </style>
 </resources>

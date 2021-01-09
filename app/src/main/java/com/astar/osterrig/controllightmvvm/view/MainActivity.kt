@@ -2,32 +2,30 @@ package com.astar.osterrig.controllightmvvm.view
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.ActivityMainBinding
+import com.astar.osterrig.controllightmvvm.model.data.CctColorEntity
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.service.BleConnectionService
+import com.astar.osterrig.controllightmvvm.service.BleServiceState
 import com.astar.osterrig.controllightmvvm.utils.LocationPermissionStatus
 import com.astar.osterrig.controllightmvvm.utils.getLocationPermissionStatus
+import com.astar.osterrig.controllightmvvm.view.viewmodels.ActivityViewModel
 
 internal class MainActivity : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
-    private lateinit var mNavigationManager: NavigationManager
-    private lateinit var mService: BleConnectionService
+    private var mService: BleConnectionService? = null
     private var mBound = false
-
-    val navigationManager: NavigationManager
-        get() = mNavigationManager
+    lateinit var mNavigationManager: NavigationManager
 
     private val mServiceConnection = object : ServiceConnection {
 
@@ -58,25 +56,47 @@ internal class MainActivity : AppCompatActivity() {
         enableBluetooth()
         checkLocationPermissions()
         startBleConnectionService()
+        addReceiver()
     }
 
     override fun onStop() {
         super.onStop()
         mNavigationManager.detachManager()
+        unbindService(mServiceConnection)
+        removeReceiver()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopBleConnectionService()
+    private fun addReceiver() {
+        val intentFilter = IntentFilter().apply {
+            addAction(BleConnectionService.ACTION_CONNECTION_STATE)
+            addAction(BleConnectionService.ACTION_BATTERY_VALUE)
+        }
+        registerReceiver(connectionServiceReceiver, intentFilter)
+    }
+
+    private fun removeReceiver() {
+        unregisterReceiver(connectionServiceReceiver)
+    }
+
+    private val connectionServiceReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == BleConnectionService.ACTION_CONNECTION_STATE) {
+                val dataAction = intent.getParcelableExtra<BleServiceState>(BleConnectionService.ACTION_CONNECTION_STATE)
+                when (dataAction) {
+                    is BleServiceState.Connection -> {
+
+                    }
+                    is BleServiceState.Battery -> {
+
+                    }
+                }
+            }
+        }
     }
 
     private fun startBleConnectionService() {
         val intent = Intent(this, BleConnectionService::class.java)
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
-    }
-
-    private fun stopBleConnectionService() {
-        unbindService(mServiceConnection)
     }
 
     private fun checkLocationPermissions() {
@@ -122,19 +142,27 @@ internal class MainActivity : AppCompatActivity() {
 
     fun connect(deviceModel: DeviceModel) {
         Log.d("MainActivity", "connect")
-        mService.connect(deviceModel)
+        mService?.connect(deviceModel)
     }
 
     fun disconnect(deviceModel: DeviceModel) {
-        mService.disconnect(deviceModel)
+        mService?.disconnect(deviceModel)
     }
 
     fun setLightness(deviceModel: DeviceModel, lightness: Int) {
-        mService.setLightness(deviceModel, lightness)
+        mService?.setLightness(deviceModel, lightness)
     }
 
-    fun setColor(deviceModel: DeviceModel, color: String) {
-        mService.setColor(deviceModel, color)
+    fun setColor(deviceModel: DeviceModel, color: Int) {
+        mService?.setColor(deviceModel, color)
+    }
+
+    fun setColor(deviceModel: DeviceModel, colorModel: CctColorEntity) {
+        mService?.setColor(deviceModel, colorModel)
+    }
+
+    fun setFunction(deviceModel: DeviceModel, typeSaber: Int, command: String) {
+        mService?.setFunction(deviceModel, typeSaber, command)
     }
 
     companion object {

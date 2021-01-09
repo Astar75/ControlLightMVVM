@@ -11,6 +11,8 @@ interface NavigationManager {
     fun navigateToGroupList(addToBackStack: Boolean)
     fun navigateToRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean)
     fun navigateToCctControl(deviceModel: DeviceModel, addToBackStack: Boolean)
-    fun navigateToFtpControl(deviceModel: DeviceModel, addToBackStack: Boolean)
+    fun navigateToFtpForWalsControl(deviceModel: DeviceModel, addToBackStack: Boolean)
     fun navigateToFncControl(deviceModel: DeviceModel, addToBackStack: Boolean)
+    fun navigateToFncRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean)
+    fun navigateToFtpForRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean)
 }

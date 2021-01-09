@@ -9,6 +9,7 @@
     <string name="desc_device_list">Device List</string>
     <string name="desc_power_button">Power button</string>
     <string name="desc_battery_level">Battery level</string>
+    <string name="desc_function_button">Function Button</string>
 
     <string name="devices_no_sabers">No sabers</string>
     <string name="groups_no_groups">No groups</string>
@@ -20,10 +21,61 @@
     <string name="title_tab_cct_control">CCT</string>
     <string name="title_tab_ftp_control">FTP</string>
     <string name="title_tab_fnc_control">FNC</string>
+    <string name="title_dialog_color_picker">Color Picker</string>
+    <string name="title_dialog_functions">Function list</string>
+
+    <string name="tv_lightness">Lightness: %d%%</string>
+    <string name="tv_tint">Tint: %d</string>
+    <string name="tv_tint_min">-50</string>
+    <string name="tv_tint_max">+50</string>
+
+    <string name="tv_sharp">Sharp</string>
+    <string name="tv_smooth">Smooth</string>
 
     <string name="preset_color_1">#ff0000</string>
     <string name="preset_color_2">#00ff00</string>
     <string name="preset_color_3">#0000ff</string>
     <string name="preset_color_4">#ff00ff</string>
+    <string name="button_select">Select</string>
+
+
+    <string-array name="function_count_colors">
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="function_smooth_type">
+        <item>Smooth</item>
+        <item>Sharp</item>
+    </string-array>
+
+    <string-array name="function_item_color_2">
+        <item>Color 1</item>
+        <item>Color 2</item>
+    </string-array>
+
+    <string-array name="function_item_color_4">
+        <item>Color 1</item>
+        <item>Color 2</item>
+        <item>Color 3</item>
+        <item>Color 4</item>
+    </string-array>
+
+    <string-array name="function_item_color_8">
+        <item>Color 1</item>
+        <item>Color 2</item>
+        <item>Color 3</item>
+        <item>Color 4</item>
+        <item>Color 5</item>
+        <item>Color 6</item>
+        <item>Color 7</item>
+        <item>Color 8</item>
+    </string-array>
+
+    <string-array name="function_fire_options">
+        <item>Cooling</item>
+        <item>Sparking</item>
+    </string-array>
 
 </resources>

@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentDevicesBinding
 import com.astar.osterrig.controllightmvvm.model.data.AppState
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
+import com.astar.osterrig.controllightmvvm.utils.Constants
 import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.view.adapters.DeviceListAdapter
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 
-internal class DeviceListFragment : BaseFragment() {
+internal class DeviceListFragment : BaseFragment<DeviceListViewModel>() {
 
     override val mModel: DeviceListViewModel by viewModel()
 
@@ -45,7 +45,16 @@ internal class DeviceListFragment : BaseFragment() {
 
     private val adapterItemClickListener = object : DeviceListAdapter.OnItemClickListener {
         override fun onItemClick(deviceModel: DeviceModel) {
-            navigateToRgbControl(deviceModel, true)
+            when (deviceModel.typeSaber) {
+                Constants.TypeSaber.TC -> {
+                    // TODO: 09.01.2021 сделать переход для управления TC лампой
+                    // navigateToTcControl(deviceModel, true)
+                }
+                Constants.TypeSaber.RGB,
+                Constants.TypeSaber.WALS -> {
+                    navigateToRgbControl(deviceModel, true)
+                }
+            }
         }
 
         override fun onItemActionConnectClick(deviceModel: DeviceModel) {

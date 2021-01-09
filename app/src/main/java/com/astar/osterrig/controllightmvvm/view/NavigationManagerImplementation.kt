@@ -7,6 +7,7 @@ import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.view.screen_cct_control.CctControlFragment
 import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListFragment
 import com.astar.osterrig.controllightmvvm.view.screen_fnc_control.FncControlFragment
+import com.astar.osterrig.controllightmvvm.view.screen_fnc_rgb_control.FncRgbControlFragment
 import com.astar.osterrig.controllightmvvm.view.screen_ftp_control.FtpControlFragment
 import com.astar.osterrig.controllightmvvm.view.screen_groups.GroupListFragment
 import com.astar.osterrig.controllightmvvm.view.screen_rgb_control.RgbControlFragment
@@ -41,12 +42,20 @@ internal class NavigationManagerImplementation: NavigationManager {
         navigate(CctControlFragment.newInstance(deviceModel), addToBackStack)
     }
 
-    override fun navigateToFtpControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        navigate(FtpControlFragment.newInstance(), addToBackStack)
+    override fun navigateToFtpForRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
+        // navigate(FtpRgbControlFragment.newInstance(deviceModel), addToBackStack)
+    }
+
+    override fun navigateToFtpForWalsControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
+        navigate(FtpControlFragment.newInstance(deviceModel), addToBackStack)
     }
 
     override fun navigateToFncControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        navigate(FncControlFragment.newInstance(), addToBackStack)
+        navigate(FncControlFragment.newInstance(deviceModel), addToBackStack)
+    }
+
+    override fun navigateToFncRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
+        navigate(FncRgbControlFragment.newInstance(deviceModel), addToBackStack)
     }
 
     private fun navigate(fragment: Fragment, addToBackStack: Boolean) {

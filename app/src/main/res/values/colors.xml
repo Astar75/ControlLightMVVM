@@ -16,6 +16,7 @@
     <color name="rgb_default_color_preset_2">#00ff00</color>
     <color name="rgb_default_color_preset_3">#0000ff</color>
     <color name="rgb_default_color_preset_4">#ff00ff</color>
+    <color name="dialog_title_text_color">#ffffff</color>
 
 
 </resources>

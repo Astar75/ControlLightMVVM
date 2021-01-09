@@ -1,6 +1,5 @@
 package com.astar.osterrig.controllightmvvm.view.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -22,28 +21,29 @@ class CctColorListAdapter : RecyclerView.Adapter<CctColorListAdapter.ViewHolder>
         this.onItemClickListener = listener
     }
 
-    fun removeOnItemClickListener() {
+    /*fun removeOnItemClickListener() {
         this.onItemClickListener = null
-    }
+    }*/
 
     interface OnItemClickListener {
         fun onItemClickListener(item: CctColorEntity)
     }
 
-    inner class ViewHolder(private val binding: ItemCctColorBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ItemCctColorBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
         fun bind(item: CctColorEntity) {
             binding.root.setOnClickListener {
                 onItemClickListener?.onItemClickListener(item)
             }
-
-            Log.d("CctAdapter", "${item.backgroundCell}")
             binding.tvCctTitle.text = item.kelvin
             binding.cell.setBackgroundColor(item.backgroundCell)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding: ItemCctColorBinding = ItemCctColorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding: ItemCctColorBinding =
+            ItemCctColorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 

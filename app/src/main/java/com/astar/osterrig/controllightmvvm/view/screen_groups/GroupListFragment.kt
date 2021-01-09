@@ -12,11 +12,11 @@ import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 
-internal class GroupListFragment : BaseFragment() {
+internal class GroupListFragment : BaseFragment<GroupListViewModel>() {
 
     private lateinit var mBinding: FragmentGroupsBinding
 
-    override val mModel: ViewModel by viewModel<GroupListViewModel>()
+    override val mModel: GroupListViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

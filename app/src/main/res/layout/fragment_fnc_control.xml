@@ -1,14 +1,354 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.screen_fnc_control.FncControlFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <FrameLayout
+        android:id="@+id/containerTopControlPanel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="@dimen/top_control_panel_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-</FrameLayout>
+        <include
+            android:id="@+id/topControlPanel"
+            layout="@layout/include_top_control_panel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/containerControlSettingsFunction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/containerTopControlPanel">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/btnFunctionOne"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:layout_marginStart="@dimen/maximal_margin"
+                android:layout_marginTop="@dimen/maximal_margin"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toTopOf="@id/btnFunctionFour"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorOne"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionOne"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionOne"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionOne"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionOne" />
+
+            <ImageView
+                android:id="@+id/btnFunctionTwo"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionOne"
+                app:layout_constraintEnd_toStartOf="@id/btnFunctionThree"
+                app:layout_constraintStart_toEndOf="@id/btnFunctionOne"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionOne" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorTwo"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionTwo"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionTwo"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionTwo"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionTwo" />
+
+            <ImageView
+                android:id="@+id/btnFunctionThree"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:layout_marginEnd="@dimen/maximal_margin"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionOne"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionOne" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorThree"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionThree"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionThree"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionThree"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionThree" />
+
+            <ImageView
+                android:id="@+id/btnFunctionFour"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:layout_marginTop="@dimen/maximal_margin"
+                android:layout_marginBottom="@dimen/maximal_margin"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toTopOf="@id/btnFunctionSeven"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionOne"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionOne"
+                app:layout_constraintTop_toBottomOf="@id/btnFunctionOne" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorFour"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionFour"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionFour"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionFour"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionFour" />
+
+            <ImageView
+                android:id="@+id/btnFunctionFive"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionFour"
+                app:layout_constraintEnd_toStartOf="@id/btnFunctionSix"
+                app:layout_constraintStart_toEndOf="@id/btnFunctionFour"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionFour" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorFive"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionFive"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionFive"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionFive"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionFive" />
+
+            <ImageView
+                android:id="@+id/btnFunctionSix"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:layout_marginEnd="@dimen/maximal_margin"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionFour"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionFour" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorSix"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionSix"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionSix"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionSix"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionSix" />
+
+            <ImageView
+                android:id="@+id/btnFunctionSeven"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:layout_marginBottom="@dimen/maximal_margin"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionOne"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionOne"
+                app:layout_constraintTop_toBottomOf="@id/btnFunctionFour" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorSeven"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionSeven"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionSeven"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionSeven"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionSeven" />
+
+            <ImageView
+                android:id="@+id/btnFunctionEight"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionSeven"
+                app:layout_constraintEnd_toStartOf="@id/btnFunctionNine"
+                app:layout_constraintStart_toEndOf="@id/btnFunctionSeven"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionSeven" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorEight"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionEight"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionEight"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionEight"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionEight" />
+
+            <ImageView
+                android:id="@+id/btnFunctionNine"
+                android:layout_width="@dimen/button_function_size"
+                android:layout_height="@dimen/button_function_size"
+                android:layout_marginEnd="@dimen/maximal_margin"
+                android:contentDescription="@string/desc_function_button"
+                android:src="@drawable/ic_btn_no_color"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionSeven"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionSeven" />
+
+            <View
+                android:id="@+id/btnFunctionSelectorNine"
+                android:layout_width="@dimen/button_function_selector_size"
+                android:layout_height="@dimen/button_function_selector_size"
+                android:background="@drawable/drawable_cell_selector"
+                app:layout_constraintBottom_toBottomOf="@id/btnFunctionNine"
+                app:layout_constraintEnd_toEndOf="@id/btnFunctionNine"
+                app:layout_constraintStart_toStartOf="@id/btnFunctionNine"
+                app:layout_constraintTop_toTopOf="@id/btnFunctionNine" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerControlSettingsFunction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/containerBottomNavPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Spinner
+            android:id="@+id/spParamsOne"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin"
+            app:layout_constraintBottom_toTopOf="@id/previewFunction"
+            app:layout_constraintEnd_toStartOf="@id/spParamsTwo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/spParamsTwo"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            app:layout_constraintBottom_toBottomOf="@id/spParamsOne"
+            app:layout_constraintEnd_toStartOf="@id/spParamsThree"
+            app:layout_constraintStart_toEndOf="@id/spParamsOne"
+            app:layout_constraintTop_toTopOf="@id/spParamsOne" />
+
+        <Spinner
+            android:id="@+id/spParamsThree"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin"
+            app:layout_constraintBottom_toBottomOf="@id/spParamsOne"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/spParamsTwo"
+            app:layout_constraintTop_toTopOf="@id/spParamsOne" />
+
+        <com.astar.osterrig.controllightmvvm.view.widgets.GradientView
+            android:id="@+id/previewFunction"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_margin="@dimen/default_margin"
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toTopOf="@id/sbLightness"
+            app:layout_constraintEnd_toStartOf="@id/colorAndFunctionSelector"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spParamsOne" />
+
+        <View
+            android:id="@+id/colorAndFunctionSelector"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:background="@color/purple_200"
+            android:layout_marginEnd="@dimen/default_margin"
+            app:layout_constraintBottom_toBottomOf="@id/previewFunction"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/previewFunction" />
+
+        <SeekBar
+            android:id="@+id/sbLightness"
+            style="@style/SeekBarLightness"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin"
+            android:max="255"
+            app:layout_constraintBottom_toTopOf="@id/sbSpeed"
+            app:layout_constraintEnd_toStartOf="@id/tvLightnessIndicator"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/previewFunction" />
+
+        <TextView
+            android:id="@+id/tvLightnessIndicator"
+            android:layout_width="40dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin"
+            app:layout_constraintBottom_toBottomOf="@id/sbLightness"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/sbLightness" />
+
+        <SeekBar
+            android:id="@+id/sbSpeed"
+            style="@style/SeekBarLightness"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin"
+            android:max="2500"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvSpeedIndicator"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sbLightness" />
+
+        <TextView
+            android:id="@+id/tvSpeedIndicator"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="@id/sbSpeed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/sbSpeed" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/containerBottomNavPanel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_nav_panel_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include
+            android:id="@+id/bottomNavPanel"
+            layout="@layout/include_bottom_nav_panel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
