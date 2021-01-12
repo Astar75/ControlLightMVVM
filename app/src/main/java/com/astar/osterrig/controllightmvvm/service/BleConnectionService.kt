@@ -59,7 +59,9 @@ class BleConnectionService : Service() {
         Log.d(TAG, "connect")
         val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
         connectionManager?.connect(device)
-        connectedDevices.add(device)
+        if (connectedDevices.firstOrNull { deviceModel.macAddress == it.address } == null) {
+            connectedDevices.add(device)
+        }
     }
 
     fun disconnect(deviceModel: DeviceModel) {
@@ -82,23 +84,47 @@ class BleConnectionService : Service() {
     }
 
     fun setColor(deviceModel: DeviceModel, @ColorInt color: Int) {
-        val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        connectionManager?.setColor(device, color)
+        // val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+        // connectionManager?.setColor(device, color)
+        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
+        if (device == null) {
+            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+            connectedDevices.add(device)
+        }
+        device?.let { connectionManager?.setColor(it, color) }
     }
 
     fun setColor(deviceModel: DeviceModel, colorModel: CctColorEntity) {
-        val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        connectionManager?.setColor(device, colorModel)
+        // val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+        // connectionManager?.setColor(device, colorModel)
+        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
+        if (device == null) {
+            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+            connectedDevices.add(device)
+        }
+        device?.let { connectionManager?.setColor(it, colorModel) }
     }
 
     fun setFunction(deviceModel: DeviceModel, typeSaber: Int, command: String) {
-        val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        connectionManager?.setFunction(device, typeSaber, command)
+        // val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+        // connectionManager?.setFunction(device, typeSaber, command)
+        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
+        if (device == null) {
+            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+            connectedDevices.add(device)
+        }
+        device?.let { connectionManager?.setFunction(it, typeSaber, command) }
     }
 
     fun setSpeed(deviceModel: DeviceModel, speed: Int) {
-        val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        connectionManager?.setSpeed(device, speed)
+        // val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+        // connectionManager?.setSpeed(device, speed)
+        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
+        if (device == null) {
+            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+            connectedDevices.add(device)
+        }
+        device?.let { connectionManager?.setSpeed(it, speed) }
     }
 
     private val bleConnectionManagerCallback = object : BleConnectionManagerCallback {

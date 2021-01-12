@@ -99,6 +99,17 @@ class MainActivityViewModel : ViewModel() {
                         buildCommand.append("c${i+1}=${colorIntToRgbString(functionWals.colorArray[i])};")
                     }
                 }
+                WalsFunctionCode.FADE -> {
+                    if (functionWals.isSmooth) {
+                        buildCommand.append("c=131;")
+                    } else {
+                        buildCommand.append("c=${functionWals.code};")
+                    }
+                    buildCommand.append("cc=2;")
+                    for (i in 0 until 2) {
+                        buildCommand.append("c${i + 1}=${colorIntToRgbString(functionWals.colorArray[i])};")
+                    }
+                }
                 WalsFunctionCode.FIRE -> {
                     buildCommand.append("c=${functionWals.code};")
                     buildCommand.append(if (functionWals.isReverse) "d=r;" else "d=l;")

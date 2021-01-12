@@ -1,6 +1,5 @@
 package com.astar.osterrig.controllightmvvm.service.bluetooth
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.util.Log
@@ -15,12 +14,6 @@ class BleConnectionManagerImplementation(val context: Context) :
     private val managedDevices: MutableList<BluetoothDevice> = mutableListOf()
     private var callback: BleConnectionManagerCallback? = null
 
-    /*init {
-        val adapter = BluetoothAdapter.getDefaultAdapter()
-        if (adapter != null) {
-            Log.d(TAG, "Bluetooth Adapter support!")
-        }
-    }*/
 
     override fun addCallback(callback: BleConnectionManagerCallback) {
         this.callback = callback
@@ -50,6 +43,12 @@ class BleConnectionManagerImplementation(val context: Context) :
                 bleManagers.remove(device)
             }
             .enqueue()
+
+        Log.d(TAG, "==========================")
+        for (d in managedDevices) {
+            Log.d(TAG, "connect: ${d.address}")
+        }
+        Log.d(TAG, "============================")
     }
 
     override fun disconnect(device: BluetoothDevice) {
@@ -117,7 +116,10 @@ class BleConnectionManagerImplementation(val context: Context) :
     }
 
     override fun onDeviceFailedToConnect(device: BluetoothDevice, reason: Int) {
-        Log.d(TAG, "onDeviceFailedToConnect: Ошибка соединения с ${device.address}, код ошибки ${reason}")
+        Log.d(
+            TAG,
+            "onDeviceFailedToConnect: Ошибка соединения с ${device.address}, код ошибки ${reason}"
+        )
         callback?.onFailedToConnect(device)
     }
 
@@ -137,6 +139,16 @@ class BleConnectionManagerImplementation(val context: Context) :
     companion object {
         const val TAG = "BleConnectionManager"
 
+        @Volatile
+        private var instance: BleConnectionManager? = null
+
+        /* fun newInstance(context: Context): BleConnectionManager {
+            return instance ?: BleConnectionManagerImplementation(context).also {
+                instance = it
+            }
+        }*/
+
+        @JvmStatic
         fun newInstance(context: Context) = BleConnectionManagerImplementation(context)
     }
 }

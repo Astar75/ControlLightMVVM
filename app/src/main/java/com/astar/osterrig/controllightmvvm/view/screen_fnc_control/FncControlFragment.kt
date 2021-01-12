@@ -132,10 +132,7 @@ internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
         mModel.cellFunctionEight.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionEight) })
         mModel.cellFunctionNine.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionNine) })
 
-        mModel.selectedFunction.observe(viewLifecycleOwner, {
-            updateControlUi(it)
-            showToastMessage(it.name)
-        })
+        mModel.selectedFunction.observe(viewLifecycleOwner, { updateControlUi(it) })
 
         mModel.lightnessPreviewIndicator.observe(viewLifecycleOwner, { binding.tvLightnessIndicator.toPercentValue(it, 255) })
         mModel.speedPreviewIndicator.observe(viewLifecycleOwner, { binding.tvSpeedIndicator.toPercentValue(it, 2500) })
@@ -304,8 +301,8 @@ internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
         selectedFunction?.let {
             if (it.code != Constants.WalsFunctionCode.NONE) {
                 // TODO: 11.01.2021 Сделать настройку "Отправлять скорость перед включением эффекта"
-                // controlViewModel.setSpeed(deviceModel, it.speed)
                 controlViewModel.setFunction(deviceModel, Constants.TypeSaber.WALS, it)
+                controlViewModel.setSpeed(deviceModel, it.speed)
             }
         }
     }

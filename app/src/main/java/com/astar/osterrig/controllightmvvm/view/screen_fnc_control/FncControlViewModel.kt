@@ -237,6 +237,12 @@ internal class FncControlViewModel : ViewModel() {
                     _blockLightnessSeekBar.value = true
                     _blockSpeedSeekBar.value = true
                 }
+                Constants.WalsFunctionCode.FADE -> {
+                    _blockSpinnerTwo.value = true
+                    _blockSpinnerThree.value = true
+                    _blockLightnessSeekBar.value = true
+                    _blockSpeedSeekBar.value = true
+                }
                 Constants.WalsFunctionCode.SNAKE -> {
                     _blockSpinnerOne.value = true
                     _blockSpinnerTwo.value = true
@@ -277,17 +283,93 @@ internal class FncControlViewModel : ViewModel() {
         return colorArray
     }
 
+    private fun mapFunctionPreset(functionWals: FunctionWals): FunctionWals {
+        when (functionWals.code) {
+            Constants.WalsFunctionCode.CYLON -> {
+                val colorArray = arrayOf(
+                    Color.rgb(255, 118, 118),
+                    Color.rgb(105, 255, 118),
+                    Color.rgb(81, 187, 255)
+                )
+                functionWals.useColors = 3
+                for (i in 0 until functionWals.useColors) {
+                    functionWals.colorArray[i] = colorArray[i]
+                }
+            }
+            Constants.WalsFunctionCode.HSV -> {
+                val colorArray = arrayOf(
+                    Color.RED, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.MAGENTA
+                )
+                functionWals.useColors = 6
+                for (i in 0 until functionWals.useColors) {
+                    functionWals.colorArray[i] = colorArray[i]
+                }
+            }
+            Constants.WalsFunctionCode.FIRE -> {
+                val colorArray = arrayOf(
+                    Color.RED, Color.rgb(255, 180, 0), Color.WHITE
+                )
+                functionWals.useColors = 3
+                for (i in 0 until functionWals.useColors) {
+                    functionWals.colorArray[i] = colorArray[i]
+                }
+            }
+            Constants.WalsFunctionCode.FADE -> {
+                val colorArray = arrayOf(
+                    Color.RED,
+                    Color.BLACK
+                )
+                functionWals.speed = 1250
+                functionWals.useColors = 2
+                for (i in 0 until functionWals.useColors) {
+                    functionWals.colorArray[i] = colorArray[i]
+                }
+            }
+            Constants.WalsFunctionCode.FLASH_LIGHT -> {
+                val colorArray = arrayOf(
+                    Color.RED,
+                    Color.BLUE
+                )
+                functionWals.useColors = 2
+                functionWals.isSmooth = false
+                functionWals.speed = 1000
+                for (i in 0 until functionWals.useColors) {
+                    functionWals.colorArray[i] = colorArray[i]
+                }
+            }
+            Constants.WalsFunctionCode.PRIDE -> {
+                val colorArray = arrayOf(
+                    Color.RED,
+                    Color.rgb(255, 150, 150),
+                    Color.YELLOW,
+                    Color.rgb(255, 255, 150),
+                    Color.GREEN,
+                    Color.CYAN,
+                    Color.rgb(150, 255, 255),
+                    Color.BLUE
+                )
+                functionWals.useColors = 8
+                for (i in 0 until functionWals.useColors) {
+                    functionWals.colorArray[i] = colorArray[i]
+                }
+            }
+        }
+        return functionWals
+    }
+
     fun changeFunctionCell(cell: Int, functionCode: Int, functionName: String, functionIcon: Int) {
-        val function = FunctionWals(
-            code = functionCode,
-            name = functionName,
-            icon = functionIcon,
-            useColors = 2,
-            colorArray = generateColorBlack(IntArray(8)),
-            isSmooth = true,
-            isReverse = false,
-            speed = 1,
-            lightness = 255
+        val function = mapFunctionPreset(
+            FunctionWals(
+                code = functionCode,
+                name = functionName,
+                icon = functionIcon,
+                useColors = 2,
+                colorArray = generateColorBlack(IntArray(8)),
+                isSmooth = true,
+                isReverse = false,
+                speed = 1,
+                lightness = 255
+            )
         )
         when(cell) {
             0 -> { _cellFunctionOne.value = function }
