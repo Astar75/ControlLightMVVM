@@ -14,7 +14,7 @@ data class DeviceModel(
     @ColumnInfo(name = "mac_address")
     val macAddress: String,
     val name: String,
-    @ColumnInfo(name = "group_name")
     val typeSaber: Int,
+    @ColumnInfo(name = "group_name")
     val groupName: String
 ) : Parcelable

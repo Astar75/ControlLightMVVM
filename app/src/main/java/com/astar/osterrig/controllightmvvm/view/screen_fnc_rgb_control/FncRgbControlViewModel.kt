@@ -1,9 +1,11 @@
 package com.astar.osterrig.controllightmvvm.view.screen_fnc_rgb_control
 
+import android.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.astar.osterrig.controllightmvvm.model.data.FunctionRgb
+import com.astar.osterrig.controllightmvvm.utils.Constants.RgbFunctionCode
 import com.astar.osterrig.controllightmvvm.utils.DataProvider
 
 
@@ -57,12 +59,12 @@ class FncRgbControlViewModel : ViewModel() {
     val speedPreview: LiveData<Int>
         get() = _speedPreview
 
-    private val _sendFunction: MutableLiveData<Int> = MutableLiveData()
-    val sendFunction: LiveData<Int>
-        get() = _sendFunction
+    private val _functionPreview: MutableLiveData<Pair<Boolean, IntArray>> = MutableLiveData()
+    val functionPreview: LiveData<Pair<Boolean, IntArray>>
+        get() = _functionPreview
 
     init {
-        val functionsData = DataProvider.getRgbFunctions()
+        val functionsData = DataProvider.getPresetRgbFunctions()
 
         _cellFunctionOne.value = functionsData[0]
         _cellFunctionTwo.value = functionsData[1]
@@ -73,6 +75,57 @@ class FncRgbControlViewModel : ViewModel() {
         _cellFunctionSeven.value = functionsData[6]
         _cellFunctionEight.value = functionsData[7]
         _cellFunctionNine.value = functionsData[8]
+    }
+
+    fun setFunctionToCell(cell: Int, code: Int, name: String, icon: Int) {
+        when (cell) {
+            0 -> {
+                _cellFunctionOne.value =
+                    _cellFunctionOne.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+            1 -> {
+                _cellFunctionTwo.value =
+                    _cellFunctionTwo.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+            2 -> {
+                _cellFunctionThree.value =
+                    _cellFunctionThree.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+            3 -> {
+                _cellFunctionFour.value =
+                    _cellFunctionFour.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+            4 -> {
+                _cellFunctionFive.value =
+                    _cellFunctionFive.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+            5 -> {
+                _cellFunctionSix.value =
+                    _cellFunctionSix.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+            6 -> {
+                _cellFunctionSeven.value =
+                    _cellFunctionSeven.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+            7 -> {
+                _cellFunctionEight.value =
+                    _cellFunctionEight.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+            8 -> {
+                _cellFunctionNine.value =
+                    _cellFunctionNine.value?.let { applyChangeFunction(it, code, name, icon) }
+            }
+        }
+    }
+
+    private fun applyChangeFunction(
+        currentFunction: FunctionRgb,
+        code: Int, name: String, icon: Int
+    ): FunctionRgb {
+        currentFunction.code = code
+        currentFunction.name = name
+        currentFunction.icon = icon
+        return currentFunction
     }
 
     fun selectFunction(cell: Int) {
@@ -106,7 +159,146 @@ class FncRgbControlViewModel : ViewModel() {
             }
         }
 
-        _sendFunction.value = _selectedFunction.value?.code
+        setFunctionPreview()
+    }
+
+    private fun setFunctionPreview() {
+        val functionCode = _selectedFunction.value
+        functionCode?.code.let {
+            when (it) {
+                RgbFunctionCode.NONE -> {
+                    _functionPreview.value = false to intArrayOf(Color.BLACK, Color.BLACK)
+                }
+                RgbFunctionCode.CROSS_FADE -> {
+                    _functionPreview.value = true to intArrayOf(
+                        Color.RED,
+                        Color.YELLOW,
+                        Color.GREEN,
+                        Color.CYAN,
+                        Color.BLUE,
+                        Color.MAGENTA
+                    )
+                }
+                RgbFunctionCode.RED_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.RED, Color.BLACK)
+                }
+                RgbFunctionCode.YELLOW_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.YELLOW, Color.BLACK)
+                }
+                RgbFunctionCode.GREEN_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.GREEN, Color.BLACK)
+                }
+                RgbFunctionCode.CYAN_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.CYAN, Color.BLACK)
+                }
+                RgbFunctionCode.BLUE_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.BLUE, Color.BLACK)
+                }
+                RgbFunctionCode.PURPLE_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.MAGENTA, Color.BLACK)
+                }
+                RgbFunctionCode.RED_BLUE_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.RED, Color.BLUE)
+                }
+                RgbFunctionCode.RED_GREEN_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.RED, Color.GREEN)
+                }
+                RgbFunctionCode.GREEN_BLUE_FADE -> {
+                    _functionPreview.value = true to intArrayOf(Color.GREEN, Color.BLUE)
+                }
+                RgbFunctionCode.POLICE -> {
+                    _functionPreview.value = false to intArrayOf(Color.RED, Color.BLUE)
+                }
+                RgbFunctionCode.STROBE_FLASH -> {
+                    _functionPreview.value = false to intArrayOf(
+                        Color.RED,
+                        Color.BLACK,
+                        Color.YELLOW,
+                        Color.BLACK,
+                        Color.GREEN,
+                        Color.BLACK,
+                        Color.CYAN,
+                        Color.BLACK,
+                        Color.BLUE,
+                        Color.BLACK,
+                        Color.MAGENTA,
+                        Color.BLACK
+                    )
+                }
+                RgbFunctionCode.RED_STROBE_FLASH -> {
+                    _functionPreview.value = false to intArrayOf(Color.RED, Color.BLACK)
+                }
+                RgbFunctionCode.GREEN_STROBE_FLASH -> {
+                    _functionPreview.value = false to intArrayOf(Color.GREEN, Color.BLACK)
+                }
+                RgbFunctionCode.BLUE_STROBE_FLASH -> {
+                    _functionPreview.value = false to intArrayOf(Color.BLUE, Color.BLACK)
+                }
+                RgbFunctionCode.YELLOW_STROBE_FLASH -> {
+                    _functionPreview.value = false to intArrayOf(Color.YELLOW, Color.BLACK)
+                }
+                RgbFunctionCode.PURPLE_STROBE_FLASH -> {
+                    _functionPreview.value = false to intArrayOf(Color.MAGENTA, Color.BLACK)
+                }
+                RgbFunctionCode.CYAN_STROBE_FLASH -> {
+                    _functionPreview.value = false to intArrayOf(Color.CYAN, Color.BLACK)
+                }
+                RgbFunctionCode.JUMPING_CHANGE -> {
+                    _functionPreview.value = false to intArrayOf(
+                        Color.RED,
+                        Color.YELLOW,
+                        Color.GREEN,
+                        Color.CYAN,
+                        Color.BLUE,
+                        Color.MAGENTA
+                    )
+                }
+                RgbFunctionCode.BROKEN_LAMP_1 -> {
+                    _functionPreview.value =
+                        false to intArrayOf(Color.WHITE, Color.BLACK, Color.WHITE)
+                }
+                RgbFunctionCode.BROKEN_LAMP_2 -> {
+                    _functionPreview.value = false to intArrayOf(
+                        Color.WHITE,
+                        Color.BLACK,
+                        Color.WHITE,
+                        Color.WHITE,
+                        Color.BLACK,
+                        Color.WHITE
+                    )
+                }
+                RgbFunctionCode.BROKEN_LAMP_3 -> {
+                    _functionPreview.value = false to intArrayOf(
+                        Color.YELLOW,
+                        Color.WHITE,
+                        Color.BLACK,
+                        Color.WHITE,
+                        Color.BLACK,
+                        Color.YELLOW
+                    )
+                }
+                RgbFunctionCode.BROKEN_LAMP_4 -> {
+                    _functionPreview.value = false to intArrayOf(
+                        Color.YELLOW,
+                        Color.BLACK,
+                        Color.YELLOW,
+                        Color.YELLOW,
+                        Color.BLACK,
+                        Color.YELLOW
+                    )
+                }
+                RgbFunctionCode.BROKEN_LAMP_5 -> {
+                    _functionPreview.value = false to intArrayOf(
+                        Color.YELLOW,
+                        Color.BLACK,
+                        Color.YELLOW,
+                        Color.BLACK,
+                        Color.YELLOW,
+                        Color.BLACK
+                    )
+                }
+            }
+        }
     }
 
     fun setLightnessCell(cell: Int, lightness: Int) {
@@ -208,10 +400,10 @@ class FncRgbControlViewModel : ViewModel() {
     }
 
     fun setLightness(progress: Int) {
-
+        _lightnessPreview.value = progress
     }
 
     fun setSpeed(progress: Int) {
-
+        _speedPreview.value = progress
     }
 }

@@ -9,7 +9,6 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
-import androidx.lifecycle.ViewModelProvider
 import com.astar.osterrig.controllightmvvm.model.data.CctColorEntity
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.service.bluetooth.BleConnectionManager
@@ -23,7 +22,7 @@ class BleConnectionService : Service() {
     }
 
     private var connectionManager: BleConnectionManager? = null
-
+    private val connectedDevices: MutableList<BluetoothDevice> = mutableListOf()
 
     inner class LocalBinder : Binder() {
         val service: BleConnectionService
@@ -50,20 +49,36 @@ class BleConnectionService : Service() {
         return super.onUnbind(intent)
     }
 
+    fun isConnected(deviceModel: DeviceModel): Boolean? {
+        val device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
+        device?.let { connectionManager?.isConnected(device) }
+        return connectionManager?.isConnected(device)
+    }
+
     fun connect(deviceModel: DeviceModel) {
         Log.d(TAG, "connect")
         val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
         connectionManager?.connect(device)
+        connectedDevices.add(device)
     }
 
     fun disconnect(deviceModel: DeviceModel) {
-        val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        connectionManager?.disconnect(device)
+        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
+        if (device != null) {
+            connectedDevices.remove(device)
+        } else {
+            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+        }
+        device?.let { connectionManager?.disconnect(it) }
     }
 
     fun setLightness(deviceModel: DeviceModel, @IntRange(from = 0, to = 255) lightness: Int) {
-        val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        connectionManager?.setLightness(device, lightness)
+        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
+        if (device == null) {
+            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+            connectedDevices.add(device)
+        }
+        device?.let { connectionManager?.setLightness(it, lightness) }
     }
 
     fun setColor(deviceModel: DeviceModel, @ColorInt color: Int) {
@@ -81,6 +96,11 @@ class BleConnectionService : Service() {
         connectionManager?.setFunction(device, typeSaber, command)
     }
 
+    fun setSpeed(deviceModel: DeviceModel, speed: Int) {
+        val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+        connectionManager?.setSpeed(device, speed)
+    }
+
     private val bleConnectionManagerCallback = object : BleConnectionManagerCallback {
         override fun onBatteryValue(bluetoothDevice: BluetoothDevice, batteryValue: Int) {
             //viewModel.setBatteryValue(bluetoothDevice, batteryValue)
@@ -94,13 +114,36 @@ class BleConnectionService : Service() {
             //viewModel.setSaberCurrentLightness(bluetoothDevice, lightness)
         }
 
+        override fun onConnecting(bluetoothDevice: BluetoothDevice) {
+            val serviceState = BleServiceState.Connecting(bluetoothDevice)
+            sendStatusBroadcast(serviceState)
+        }
+
         override fun onConnected(bluetoothDevice: BluetoothDevice) {
-            sendConnectionState(bluetoothDevice, true)
+            val serviceState = BleServiceState.Connected(bluetoothDevice)
+            sendStatusBroadcast(serviceState)
         }
 
         override fun onDisconnected(bluetoothDevice: BluetoothDevice) {
-            sendConnectionState(bluetoothDevice, false)
+            val serviceState = BleServiceState.Disconnected(bluetoothDevice)
+            sendStatusBroadcast(serviceState)
         }
+
+        override fun onFailedToConnect(bluetoothDevice: BluetoothDevice) {
+            val serviceState = BleServiceState.FailedToConnect(bluetoothDevice)
+            sendStatusBroadcast(serviceState)
+        }
+
+        override fun isConnected(device: BluetoothDevice) {
+            val serviceState = BleServiceState.IsConnected(device)
+            sendStatusBroadcast(serviceState)
+        }
+    }
+
+    private fun sendStatusBroadcast(bleServiceState: BleServiceState) {
+        val intent = Intent(ACTION_BLE_STATE)
+        intent.putExtra(EXTRA_BLE_STATE, bleServiceState)
+        sendBroadcast(intent)
     }
 
     private fun sendConnectionState(bluetoothDevice: BluetoothDevice, state: Boolean) {
@@ -111,8 +154,13 @@ class BleConnectionService : Service() {
 
 
 
+
     companion object {
         const val TAG = "BleConnectionService"
+
+        const val ACTION_BLE_STATE = "action_ble_state"
+        const val EXTRA_BLE_STATE = "extra_state"
+
         const val ACTION_CONNECTION_STATE = "action_connection_state"
         const val ACTION_BATTERY_VALUE = "action_battery_value"
     }

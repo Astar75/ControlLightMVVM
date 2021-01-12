@@ -6,15 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
+import androidx.fragment.app.activityViewModels
 import com.astar.osterrig.controllightmvvm.R
-import com.astar.osterrig.controllightmvvm.databinding.FncRgbControlFragmentBinding
+import com.astar.osterrig.controllightmvvm.databinding.FragmentFncRgbControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.model.data.FunctionRgb
 import com.astar.osterrig.controllightmvvm.utils.Constants
+import com.astar.osterrig.controllightmvvm.utils.DataProvider
 import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
 import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.utils.toPercentValue
+import com.astar.osterrig.controllightmvvm.view.MainActivityViewModel
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
+import com.astar.osterrig.controllightmvvm.view.dialogs.SelectFunctionDialog
 import com.astar.osterrig.controllightmvvm.view.screen_fnc_control.FncControlFragment
 import com.bumptech.glide.Glide
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -23,7 +27,8 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
 
     override val mModel: FncRgbControlViewModel by viewModel()
 
-    lateinit var binding: FncRgbControlFragmentBinding
+    private val controlViewModel: MainActivityViewModel by activityViewModels()
+    private lateinit var binding: FragmentFncRgbControlBinding
 
     private var selectedFunctionCell: FunctionCell = FunctionCell.FUNCTION_1
     private lateinit var deviceModel: DeviceModel
@@ -40,7 +45,7 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FncRgbControlFragmentBinding.inflate(inflater, container,false)
+        binding = FragmentFncRgbControlBinding.inflate(inflater, container,false)
         initView()
         addObservers()
         return binding.root
@@ -54,20 +59,22 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
                 btnTwo.text = context?.getString(R.string.title_tab_ftp_control)
                 btnThree.text = context?.getString(R.string.title_tab_fnc_control)
                 btnFour.visibility = View.GONE
+
+                btnOne.setOnClickListener { navigateToRgbControl(deviceModel, false) }
+                btnTwo.setOnClickListener { navigateToFtpForRgbControl(deviceModel) }
             } else if (deviceModel.typeSaber == Constants.TypeSaber.WALS) {
                 btnOne.text = context?.getString(R.string.title_tab_rgb_control)
                 btnTwo.text = context?.getString(R.string.title_tab_cct_control)
                 btnThree.text = context?.getString(R.string.title_tab_ftp_control)
                 btnFour.text = context?.getString(R.string.title_tab_fnc_control)
                 btnFour.visibility = View.VISIBLE
+
+                btnOne.setOnClickListener { navigateToRgbControl(deviceModel, true) }
+                btnTwo.setOnClickListener { navigateToCctControl(deviceModel) }
+                btnThree.setOnClickListener { navigateToFtpForWalsControl(deviceModel) }
             }
 
-
-
-            btnFour.setBackgroundTint(R.color.button_active_color)
-            btnOne.setOnClickListener { navigateToRgbControl(deviceModel, true) }
-            btnTwo.setOnClickListener { navigateToCctControl(deviceModel) }
-            btnThree.setOnClickListener { navigateToFtpForWalsControl(deviceModel) }
+            btnThree.setBackgroundTint(R.color.button_active_color)
         }
 
         binding.btnFunctionOne.setOnClickListener(selectClickListener)
@@ -92,6 +99,8 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
 
         binding.sbLightness.setOnSeekBarChangeListener(seekBarChangeListener)
         binding.sbSpeed.setOnSeekBarChangeListener(seekBarChangeListener)
+
+        updateFunctionCells()
     }
 
     private val selectClickListener = View.OnClickListener { v ->
@@ -111,23 +120,52 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
     }
 
     private val longClickListener = View.OnLongClickListener {
-
+        openDialogSelectFunction(it.id)
         true
     }
 
+    private fun openDialogSelectFunction(viewId: Int) {
+        val functionList = DataProvider.getRgbFunctionNameList()
+        val dialog = SelectFunctionDialog.newInstance(viewId, functionList)
+        dialog.addCallback(selectFunctionListener)
+        dialog.show(childFragmentManager, "select_function_dialog")
+    }
+
+    private val selectFunctionListener = object : SelectFunctionDialog.OnClickListener {
+        override fun onClick(item: Triple<Int, String, Int>, viewId: Int) {
+            when(viewId) {
+                binding.btnFunctionOne.id -> { mModel.setFunctionToCell(0, item.first, item.second, item.third) }
+                binding.btnFunctionTwo.id -> { mModel.setFunctionToCell(1, item.first, item.second, item.third) }
+                binding.btnFunctionThree.id -> { mModel.setFunctionToCell(2, item.first, item.second, item.third) }
+                binding.btnFunctionFour.id -> { mModel.setFunctionToCell(3, item.first, item.second, item.third) }
+                binding.btnFunctionFive.id -> { mModel.setFunctionToCell(4, item.first, item.second, item.third) }
+                binding.btnFunctionSix.id -> { mModel.setFunctionToCell(5, item.first, item.second, item.third) }
+                binding.btnFunctionSeven.id -> { mModel.setFunctionToCell(6, item.first, item.second, item.third) }
+                binding.btnFunctionEight.id -> { mModel.setFunctionToCell(7, item.first, item.second, item.third) }
+                binding.btnFunctionNine.id -> { mModel.setFunctionToCell(8, item.first, item.second, item.third) }
+            }
+        }
+    }
+
     private val seekBarChangeListener: SeekBarChangeListener = object : SeekBarChangeListener() {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            if (seekBar == binding.sbLightness)
+        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+            if (seekBar == binding.sbLightness) {
                 mModel.setLightness(progress)
-            else if (seekBar == binding.sbSpeed)
+                if (progress % 5 == 0) controlViewModel.setLightness(deviceModel, progress)
+            } else if (seekBar == binding.sbSpeed) {
                 mModel.setSpeed(progress)
+                if (progress % 5 == 0) controlViewModel.setSpeed(deviceModel, progress)
+            }
         }
 
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            if (seekBar == binding.sbLightness)
+        override fun onStopTrackingTouch(seekBar: SeekBar) {
+            if (seekBar == binding.sbLightness) {
                 mModel.setLightnessCell(selectedFunctionCell.ordinal, seekBar.progress)
-            else if (seekBar == binding.sbSpeed)
+                controlViewModel.setLightness(deviceModel, seekBar.progress)
+            } else if (seekBar == binding.sbSpeed) {
                 mModel.setSpeedCell(selectedFunctionCell.ordinal, seekBar.progress)
+                controlViewModel.setSpeed(deviceModel, seekBar.progress)
+            }
         }
     }
 
@@ -146,18 +184,26 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
             updateFunctionControlUi(it)
             updateFunctionCells()
             updateFunctionView(it)
+            sendFunction(it)
         })
 
         mModel.lightnessPreview.observe(viewLifecycleOwner, { binding.tvLightnessIndicator.toPercentValue(it, 255) })
         mModel.speedPreview.observe(viewLifecycleOwner, { binding.tvSpeedIndicator.toPercentValue(it, 2500) })
 
-        // TODO: 09.01.2021 Отправка команды, удалить потом
-        mModel.sendFunction.observe(viewLifecycleOwner, { sendFunction(it) } )
+        mModel.functionPreview.observe(viewLifecycleOwner, {
+            showFunctionPreview(it)
+        })
     }
 
-    // TODO: 09.01.2021 Отправка команды, удалить потом
-    private fun sendFunction(codeCommand: Int?) {
-        setFunction(deviceModel, Constants.TypeSaber.RGB, codeCommand.toString())
+    private fun sendFunction(codeCommand: FunctionRgb) {
+        controlViewModel.setLightness(deviceModel, codeCommand.lightness)
+        controlViewModel.setSpeed(deviceModel, codeCommand.speed)
+        controlViewModel.setFunction(deviceModel, Constants.TypeSaber.RGB, codeCommand.code.toString())
+    }
+
+    private fun showFunctionPreview(functionView: Pair<Boolean, IntArray>) {
+        binding.gradientView.setSmooth(functionView.first)
+        binding.gradientView.setColors(functionView.second.toList())
     }
 
     private fun updateFunctionIcon(iconDrawable: Int?, cellImage: ImageView) {
@@ -211,6 +257,4 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
                 }
             }
     }
-
-
 }

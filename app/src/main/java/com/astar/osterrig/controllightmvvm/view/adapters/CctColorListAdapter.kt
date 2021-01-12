@@ -26,7 +26,7 @@ class CctColorListAdapter : RecyclerView.Adapter<CctColorListAdapter.ViewHolder>
     }*/
 
     interface OnItemClickListener {
-        fun onItemClickListener(item: CctColorEntity)
+        fun onItemClickListener(cctColor: CctColorEntity)
     }
 
     inner class ViewHolder(private val binding: ItemCctColorBinding) :

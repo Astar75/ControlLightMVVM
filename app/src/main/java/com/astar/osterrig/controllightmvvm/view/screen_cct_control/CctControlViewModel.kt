@@ -2,11 +2,11 @@ package com.astar.osterrig.controllightmvvm.view.screen_cct_control
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.astar.osterrig.controllightmvvm.model.data.CctColorEntity
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
-import com.astar.osterrig.controllightmvvm.view.viewmodels.ConnectionControlViewModel
 
-internal class CctControlViewModel : ConnectionControlViewModel() {
+internal class CctControlViewModel : ViewModel() {
 
     private val _lightness: MutableLiveData<Int> = MutableLiveData(0)
     val lightness: LiveData<Int>
@@ -31,6 +31,4 @@ internal class CctControlViewModel : ConnectionControlViewModel() {
 
     }
 
-    override val connectionDeviceModel: DeviceModel
-        get() = TODO("Not yet implemented")
 }

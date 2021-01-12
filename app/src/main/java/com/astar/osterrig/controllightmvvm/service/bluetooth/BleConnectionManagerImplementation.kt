@@ -1,10 +1,12 @@
 package com.astar.osterrig.controllightmvvm.service.bluetooth
 
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.util.Log
 import com.astar.osterrig.controllightmvvm.model.data.CctColorEntity
 import no.nordicsemi.android.ble.observer.ConnectionObserver
+import kotlin.math.log
 
 class BleConnectionManagerImplementation(val context: Context) :
     BleConnectionManager, ConnectionObserver {
@@ -12,6 +14,13 @@ class BleConnectionManagerImplementation(val context: Context) :
     private val bleManagers: MutableMap<BluetoothDevice, SaberBleManager> = mutableMapOf()
     private val managedDevices: MutableList<BluetoothDevice> = mutableListOf()
     private var callback: BleConnectionManagerCallback? = null
+
+    /*init {
+        val adapter = BluetoothAdapter.getDefaultAdapter()
+        if (adapter != null) {
+            Log.d(TAG, "Bluetooth Adapter support!")
+        }
+    }*/
 
     override fun addCallback(callback: BleConnectionManagerCallback) {
         this.callback = callback
@@ -85,8 +94,21 @@ class BleConnectionManagerImplementation(val context: Context) :
         }
     }
 
-    override fun onDeviceConnecting(device: BluetoothDevice) {
+    override fun setSpeed(device: BluetoothDevice, speed: Int) {
+        val manager = bleManagers[device]
+        manager?.let {
+            if (it.isConnected) it.setSpeed(speed)
+        }
+    }
 
+    override fun isConnected(device: BluetoothDevice?): Boolean {
+        val manager = bleManagers[device]
+        return manager != null && manager.isConnected
+    }
+
+    override fun onDeviceConnecting(device: BluetoothDevice) {
+        Log.d(TAG, "onDeviceConnecting: Попытка соединения с ${device.address}")
+        callback?.onConnecting(device)
     }
 
     override fun onDeviceConnected(device: BluetoothDevice) {
@@ -95,7 +117,8 @@ class BleConnectionManagerImplementation(val context: Context) :
     }
 
     override fun onDeviceFailedToConnect(device: BluetoothDevice, reason: Int) {
-
+        Log.d(TAG, "onDeviceFailedToConnect: Ошибка соединения с ${device.address}, код ошибки ${reason}")
+        callback?.onFailedToConnect(device)
     }
 
     override fun onDeviceReady(device: BluetoothDevice) {
@@ -103,10 +126,11 @@ class BleConnectionManagerImplementation(val context: Context) :
     }
 
     override fun onDeviceDisconnecting(device: BluetoothDevice) {
-        Log.d(TAG, "onDeviceDisconnecting: Устройство разъединено ${device.address}")
+
     }
 
     override fun onDeviceDisconnected(device: BluetoothDevice, reason: Int) {
+        Log.d(TAG, "onDeviceDisconnecting: Устройство разъединено ${device.address}")
         callback?.onDisconnected(device)
     }
 

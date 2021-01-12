@@ -1,33 +1,37 @@
 package com.astar.osterrig.controllightmvvm.view.screen_fnc_control
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.SeekBar
+import androidx.fragment.app.activityViewModels
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentFncControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.model.data.FunctionWals
+import com.astar.osterrig.controllightmvvm.utils.Constants
+import com.astar.osterrig.controllightmvvm.utils.DataProvider
 import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
 import com.astar.osterrig.controllightmvvm.utils.listeners.SpinnerItemSelectedListener
 import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.utils.toPercentValue
+import com.astar.osterrig.controllightmvvm.view.MainActivityViewModel
 import com.astar.osterrig.controllightmvvm.view.adapters.SpinnerOptionAdapter
 import com.astar.osterrig.controllightmvvm.view.adapters.SpinnerOptionColorAdapter
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import com.astar.osterrig.controllightmvvm.view.dialogs.SelectColorDialog
 import com.astar.osterrig.controllightmvvm.view.dialogs.SelectFunctionDialog
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.fragment_fnc_control.*
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.util.*
 
 internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
 
     override val mModel: FncControlViewModel by viewModel()
+    private val controlViewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentFncControlBinding
     private lateinit var deviceModel: DeviceModel
 
@@ -51,7 +55,7 @@ internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
         binding = FragmentFncControlBinding.inflate(inflater, container, false)
         initView()
         addObservers()
-        updateFunctionCells()
+        updateSelectedFunctionCell()
         return binding.root
     }
 
@@ -68,30 +72,33 @@ internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
             btnThree.setOnClickListener { navigateToFtpForWalsControl(deviceModel) }
         }
 
-        binding.btnFunctionOne.setOnClickListener(selectClickListener)
-        binding.btnFunctionTwo.setOnClickListener(selectClickListener)
-        binding.btnFunctionThree.setOnClickListener(selectClickListener)
-        binding.btnFunctionFour.setOnClickListener(selectClickListener)
-        binding.btnFunctionFive.setOnClickListener(selectClickListener)
-        binding.btnFunctionSix.setOnClickListener(selectClickListener)
-        binding.btnFunctionSeven.setOnClickListener(selectClickListener)
-        binding.btnFunctionEight.setOnClickListener(selectClickListener)
-        binding.btnFunctionNine.setOnClickListener(selectClickListener)
+        binding.btnFunctionOne.setOnClickListener(selectCellClickListener)
+        binding.btnFunctionTwo.setOnClickListener(selectCellClickListener)
+        binding.btnFunctionThree.setOnClickListener(selectCellClickListener)
+        binding.btnFunctionFour.setOnClickListener(selectCellClickListener)
+        binding.btnFunctionFive.setOnClickListener(selectCellClickListener)
+        binding.btnFunctionSix.setOnClickListener(selectCellClickListener)
+        binding.btnFunctionSeven.setOnClickListener(selectCellClickListener)
+        binding.btnFunctionEight.setOnClickListener(selectCellClickListener)
+        binding.btnFunctionNine.setOnClickListener(selectCellClickListener)
 
-        binding.previewFunction.setOnClickListener { rotateFunction() }
+        binding.previewFunction.setOnClickListener {
+            changeDirectionFunction()
+            sendFunctionCommand()
+        }
 
-        binding.btnFunctionOne.setOnLongClickListener(longClickListener)
-        binding.btnFunctionTwo.setOnLongClickListener(longClickListener)
-        binding.btnFunctionThree.setOnLongClickListener(longClickListener)
-        binding.btnFunctionFour.setOnLongClickListener(longClickListener)
-        binding.btnFunctionFive.setOnLongClickListener(longClickListener)
-        binding.btnFunctionSix.setOnLongClickListener(longClickListener)
-        binding.btnFunctionSeven.setOnLongClickListener(longClickListener)
-        binding.btnFunctionEight.setOnLongClickListener(longClickListener)
-        binding.btnFunctionNine.setOnLongClickListener(longClickListener)
+        binding.btnFunctionOne.setOnLongClickListener(selectFunctionLongClickListener)
+        binding.btnFunctionTwo.setOnLongClickListener(selectFunctionLongClickListener)
+        binding.btnFunctionThree.setOnLongClickListener(selectFunctionLongClickListener)
+        binding.btnFunctionFour.setOnLongClickListener(selectFunctionLongClickListener)
+        binding.btnFunctionFive.setOnLongClickListener(selectFunctionLongClickListener)
+        binding.btnFunctionSix.setOnLongClickListener(selectFunctionLongClickListener)
+        binding.btnFunctionSeven.setOnLongClickListener(selectFunctionLongClickListener)
+        binding.btnFunctionEight.setOnLongClickListener(selectFunctionLongClickListener)
+        binding.btnFunctionNine.setOnLongClickListener(selectFunctionLongClickListener)
 
-        binding.sbLightness.setOnSeekBarChangeListener(seekBarChangeListener)
-        binding.sbSpeed.setOnSeekBarChangeListener(seekBarChangeListener)
+        binding.sbLightness.setOnSeekBarChangeListener(cellSeekBarChangeListener)
+        binding.sbSpeed.setOnSeekBarChangeListener(cellSeekBarChangeListener)
 
         binding.colorAndFunctionSelector.setOnClickListener {
             openSelectColorDialog()
@@ -115,168 +122,195 @@ internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
     }
 
     private fun addObservers() {
-        mModel.rotationFunction.observe(viewLifecycleOwner, { binding.previewFunction.rotation = if (it) 0F else 180F })
-
-        mModel.cellFunctionOne.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionOne) })
-        mModel.cellFunctionTwo.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionTwo) })
-        mModel.cellFunctionThree.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionThree) })
-        mModel.cellFunctionFour.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionFour) })
-        mModel.cellFunctionFive.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionFive) })
-        mModel.cellFunctionSix.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionSix) })
-        mModel.cellFunctionSeven.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionSeven) })
-        mModel.cellFunctionEight.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionEight) })
-        mModel.cellFunctionNine.observe(viewLifecycleOwner, { updateFunctionIcon(it.icon, binding.btnFunctionNine) })
+        mModel.cellFunctionOne.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionOne) })
+        mModel.cellFunctionTwo.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionTwo) })
+        mModel.cellFunctionThree.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionThree) })
+        mModel.cellFunctionFour.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionFour) })
+        mModel.cellFunctionFive.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionFive) })
+        mModel.cellFunctionSix.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionSix) })
+        mModel.cellFunctionSeven.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionSeven) })
+        mModel.cellFunctionEight.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionEight) })
+        mModel.cellFunctionNine.observe(viewLifecycleOwner, { updateIconFunctionCell(it.icon, binding.btnFunctionNine) })
 
         mModel.selectedFunction.observe(viewLifecycleOwner, {
-            updateFunctionControlUi(it)
-            updateFunctionCells()
-            updateFunctionView(it)
+            updateControlUi(it)
+            showToastMessage(it.name)
         })
 
-        mModel.lightnessPreview.observe(viewLifecycleOwner, { binding.tvLightnessIndicator.toPercentValue(it, 255) })
-        mModel.speedPreview.observe(viewLifecycleOwner, { binding.tvSpeedIndicator.toPercentValue(it, 2500) })
+        mModel.lightnessPreviewIndicator.observe(viewLifecycleOwner, { binding.tvLightnessIndicator.toPercentValue(it, 255) })
+        mModel.speedPreviewIndicator.observe(viewLifecycleOwner, { binding.tvSpeedIndicator.toPercentValue(it, 2500) })
+
+        mModel.blockLightnessSeekBar.observe(viewLifecycleOwner, { binding.sbLightness.isEnabled = it })
+        mModel.blockSpeedSeekBar.observe(viewLifecycleOwner, { binding.sbSpeed.isEnabled = it })
+        mModel.blockSpinnerOne.observe(viewLifecycleOwner, { binding.spParamsOne.isEnabled = it })
+        mModel.blockSpinnerTwo.observe(viewLifecycleOwner, { binding.spParamsTwo.isEnabled = it })
+        mModel.blockSpinnerThree.observe(viewLifecycleOwner, { binding.spParamsThree.isEnabled = it })
+        mModel.blockPreviewFunction.observe(viewLifecycleOwner, { binding.previewFunction.isEnabled = it })
     }
 
-    private fun updateFunctionIcon(iconDrawable: Int?, imageView: ImageView) {
-        iconDrawable?.let { id ->
-            Glide.with(this).load(id).into(imageView)
-        }
+    private fun updateIconFunctionCell(icon: Int, cellImageView: ImageView) {
+        Glide.with(this).load(icon).into(cellImageView)
     }
 
-    private fun updateFunctionControlUi(functionWals: FunctionWals) {
-        binding.spParamsTwo.setSelection(if (functionWals.isSmooth) 0 else 1, true)
+    private fun updateControlUi(functionWals: FunctionWals) {
+        val functionIndicatorColors = functionWals.colorArray.toList().subList(0, functionWals.useColors)
+        binding.previewFunction.rotation = if (functionWals.isReverse) 0f else 180f
+        binding.previewFunction.setSmooth(functionWals.isSmooth)
+        binding.previewFunction.setColors(functionIndicatorColors)
         binding.sbLightness.progress = functionWals.lightness
         binding.sbSpeed.progress = functionWals.speed
-    }
-
-    private fun updateFunctionView(functionWals: FunctionWals) {
-        val countColors = spParamsOne.selectedItem.toString().toInt()
-        val colors = functionWals.colorArray.toList().subList(0, countColors)
-        binding.previewFunction.setSmooth(functionWals.isSmooth)
-        binding.previewFunction.setColors(colors)
-    }
-
-    private fun openSelectColorDialog() {
-        val dialog = SelectColorDialog.newInstance(null)
-        dialog.show(childFragmentManager, "select_color_dialog")
-        dialog.addCallback(colorDialogListener)
-    }
-
-    private val colorDialogListener = object : SelectColorDialog.OnClickListener {
-        override fun onClick(color: Int) {
-            setColorToItemFunction(color)
-            mModel.updateSelectedCell()
+        when (functionWals.useColors) {
+            4 -> { binding.spParamsOne.setSelection(1, true) }
+            8 -> { binding.spParamsOne.setSelection(2, true) }
+            else -> { binding.spParamsOne.setSelection(0, true) }
+        }
+        if (functionWals.isSmooth) {
+            binding.spParamsTwo.setSelection(0, true)
+        } else {
+            binding.spParamsTwo.setSelection(1, true)
         }
     }
 
-    private fun setColorToItemFunction(color: Int) {
-        val selectedColorItem = binding.spParamsThree.selectedItemPosition
-        mModel.setColorToItemFunction(selectedFunctionCell.ordinal, selectedColorItem, color)
-        updateOptionSpinners()
-    }
-
-    private val selectClickListener = View.OnClickListener { v ->
-        when (v) {
-            binding.btnFunctionOne -> { selectedFunctionCell = FunctionCell.FUNCTION_1 }
-            binding.btnFunctionTwo -> { selectedFunctionCell = FunctionCell.FUNCTION_2 }
-            binding.btnFunctionThree -> { selectedFunctionCell = FunctionCell.FUNCTION_3 }
-            binding.btnFunctionFour -> { selectedFunctionCell = FunctionCell.FUNCTION_4 }
-            binding.btnFunctionFive -> { selectedFunctionCell = FunctionCell.FUNCTION_5 }
-            binding.btnFunctionSix -> { selectedFunctionCell = FunctionCell.FUNCTION_6 }
-            binding.btnFunctionSeven -> { selectedFunctionCell = FunctionCell.FUNCTION_7 }
-            binding.btnFunctionEight -> { selectedFunctionCell = FunctionCell.FUNCTION_8 }
-            binding.btnFunctionNine -> { selectedFunctionCell = FunctionCell.FUNCTION_9 }
+    private fun selectFunctionCell(viewId: Int) {
+        when (viewId) {
+            binding.btnFunctionOne.id -> { selectedFunctionCell = FunctionCell.FUNCTION_1 }
+            binding.btnFunctionTwo.id -> { selectedFunctionCell = FunctionCell.FUNCTION_2 }
+            binding.btnFunctionThree.id -> { selectedFunctionCell = FunctionCell.FUNCTION_3 }
+            binding.btnFunctionFour.id -> { selectedFunctionCell = FunctionCell.FUNCTION_4 }
+            binding.btnFunctionFive.id -> { selectedFunctionCell = FunctionCell.FUNCTION_5 }
+            binding.btnFunctionSix.id -> { selectedFunctionCell = FunctionCell.FUNCTION_6 }
+            binding.btnFunctionSeven.id -> { selectedFunctionCell = FunctionCell.FUNCTION_7 }
+            binding.btnFunctionEight.id -> { selectedFunctionCell = FunctionCell.FUNCTION_8 }
+            binding.btnFunctionNine.id -> { selectedFunctionCell = FunctionCell.FUNCTION_9 }
         }
-        mModel.selectFunction(selectedFunctionCell.ordinal)
-        updateFunctionCells()
-        updateOptionSpinners()
     }
 
-    private val longClickListener = View.OnLongClickListener {
-        openSelectFunctionDialog(it.id)
+    private val selectCellClickListener = View.OnClickListener { v ->
+        selectFunctionCell(v.id)
+        mModel.selectFunctionCell(selectedFunctionCell.ordinal)
+        updateSelectedFunctionCell()
+        sendFunctionCommand()
+    }
+
+    private val selectFunctionLongClickListener = View.OnLongClickListener { v ->
+        selectFunctionCell(v.id)
+        mModel.selectFunctionCell(selectedFunctionCell.ordinal)
+        updateSelectedFunctionCell()
+        openSelectFunctionDialog(v.id)
         true
     }
 
-    private val seekBarChangeListener = object: SeekBarChangeListener() {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            if (seekBar == binding.sbLightness) {
-                mModel.setLightness(progress)
-            } else if (seekBar == binding.sbSpeed) {
-                mModel.setSpeed(progress)
-            }
-        }
+    private fun openSelectFunctionDialog(viewId: Int) {
+        val functionList = DataProvider.getWalsFunctionNameList()
+        SelectFunctionDialog.newInstance(viewId, functionList).apply {
+            addCallback(object : SelectFunctionDialog.OnClickListener {
+                override fun onClick(item: Triple<Int, String, Int>, viewId: Int) {
+                    mModel.changeFunctionCell(selectedFunctionCell.ordinal, item.first, item.second, item.third)
+                }
+            })
+        }.show(childFragmentManager, "select_function_dialog")
 
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            super.onStopTrackingTouch(seekBar)
-            if (seekBar == binding.sbLightness) {
-                mModel.setLightnessFunction(selectedFunctionCell.ordinal, seekBar.progress)
-            } else if (seekBar == binding.sbSpeed) {
-                mModel.setSpeedFunction(selectedFunctionCell.ordinal, seekBar.progress)
-            }
-        }
     }
 
     private val optionAdapterOneListener = object : SpinnerItemSelectedListener() {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            updateOptionSpinners()
-            mModel.updateSelectedCell()
+            val countUseColors = binding.spParamsOne.selectedItem.toString().toInt()
+            mModel.changeUseColorsFunction(selectedFunctionCell.ordinal, countUseColors)
+            updateSpinners()
+            sendFunctionCommand()
         }
     }
 
     private val optionAdapterTwoListener = object : SpinnerItemSelectedListener() {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            val selectedItem = binding.spParamsTwo.selectedItem.toString()
-            Log.d("FncFragment", "onItemSelected: $selectedItem")
-            when (selectedItem) {
-                "Smooth" -> mModel.setSmooth(selectedFunctionCell.ordinal, true)
-                "Sharp" -> mModel.setSmooth(selectedFunctionCell.ordinal, false)
+            val currentItem = binding.spParamsTwo.selectedItem.toString().toLowerCase(Locale.getDefault())
+            when (currentItem) {
+                "smooth" -> { mModel.changeSmoothFunction(selectedFunctionCell.ordinal, true) }
+                "sharp" -> { mModel.changeSmoothFunction(selectedFunctionCell.ordinal, false) }
             }
-            updateOptionSpinners()
-            mModel.updateSelectedCell()
+            updateSpinners()
+            sendFunctionCommand()
         }
     }
 
     private val optionAdapterThreeListener = object : SpinnerItemSelectedListener() {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            updateOptionSpinners()
+            updateSpinners()
         }
     }
 
-    private fun updateOptionSpinners() {
-        when(binding.spParamsOne.selectedItem.toString().toInt()) {
+    private fun updateSpinners() {
+        val countUseColors = binding.spParamsOne.selectedItem.toString().toInt()
+        when(countUseColors) {
             4 -> { optionAdapterThree.addElementsColor(mModel.getStringAndColorArray(resources.getStringArray(R.array.function_item_color_4))) }
             8 -> { optionAdapterThree.addElementsColor(mModel.getStringAndColorArray(resources.getStringArray(R.array.function_item_color_8))) }
             else -> { optionAdapterThree.addElementsColor(mModel.getStringAndColorArray(resources.getStringArray(R.array.function_item_color_2))) }
         }
     }
 
-    private fun openSelectFunctionDialog(viewId: Int) {
-        val dialog = SelectFunctionDialog.newInstance(viewId)
-        dialog.addCallback(selectFunctionCallback)
-        dialog.show(childFragmentManager, "select_function_dialog")
+    private val cellSeekBarChangeListener = object : SeekBarChangeListener () {
+        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+            if (seekBar == binding.sbLightness) {
+                mModel.setLightnessIndicator(progress)
+                if (progress % 5 == 0) {
+                    mModel.changeLightnessFunction(selectedFunctionCell.ordinal, progress)
+                    if (fromUser) controlViewModel.setLightness(deviceModel, progress)
+                }
+            } else if (seekBar == binding.sbSpeed) {
+                mModel.setSpeedIndicator(progress)
+                if (progress % 5 == 0) {
+                    mModel.changeSpeedFunction(selectedFunctionCell.ordinal, progress)
+                    if (fromUser) controlViewModel.setSpeed(deviceModel, progress)
+                }
+            }
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar) {
+            if (seekBar == binding.sbLightness) {
+                mModel.setLightnessIndicator(seekBar.progress)
+                mModel.changeLightnessFunction(selectedFunctionCell.ordinal, seekBar.progress)
+            } else if (seekBar == binding.sbSpeed) {
+                mModel.setSpeedIndicator(seekBar.progress)
+                mModel.changeSpeedFunction(selectedFunctionCell.ordinal, seekBar.progress)
+            }
+            sendFunctionCommand()
+        }
     }
 
-    private val selectFunctionCallback = object : SelectFunctionDialog.OnClickListener {
-        override fun onClick(item: Triple<Int, String, Int>, viewId: Int) {
-            when (viewId) {
-                binding.btnFunctionOne.id -> { mModel.setFunctionToCell(0, code = item.first, name = item.second, icon = item.third) }
-                binding.btnFunctionTwo.id -> { mModel.setFunctionToCell(1, item.first, item.second, item.third) }
-                binding.btnFunctionThree.id -> { mModel.setFunctionToCell(2, item.first, item.second, item.third) }
-                binding.btnFunctionFour.id -> { mModel.setFunctionToCell(3, item.first, item.second, item.third) }
-                binding.btnFunctionFive.id -> { mModel.setFunctionToCell(4, item.first, item.second, item.third) }
-                binding.btnFunctionSix.id -> { mModel.setFunctionToCell(5, item.first, item.second, item.third) }
-                binding.btnFunctionSeven.id -> { mModel.setFunctionToCell(6, item.first, item.second, item.third) }
-                binding.btnFunctionEight.id -> { mModel.setFunctionToCell(7, item.first, item.second, item.third) }
-                binding.btnFunctionNine.id -> { mModel.setFunctionToCell(8, item.first, item.second, item.third) }
+    private fun openSelectColorDialog() {
+        SelectColorDialog.newInstance(null).apply {
+            addCallback(object : SelectColorDialog.OnClickListener {
+                override fun onClick(color: Int) {
+                    changeColorFunction(color)
+                    updateSpinners()
+                    sendFunctionCommand()
+                }
+            })
+        }.show(childFragmentManager, "select_color_dialog")
+    }
+
+    private fun changeColorFunction(color: Int) {
+        val currentColorItem = binding.spParamsThree.selectedItemPosition
+        mModel.changeColorFunction(selectedFunctionCell.ordinal, currentColorItem, color)
+    }
+
+    private fun changeDirectionFunction() {
+        val currentCell = selectedFunctionCell.ordinal
+        mModel.changeDirectionFunction(currentCell)
+    }
+
+    private fun sendFunctionCommand() {
+        val selectedFunction = mModel.selectedFunction.value
+        selectedFunction?.let {
+            if (it.code != Constants.WalsFunctionCode.NONE) {
+                // TODO: 11.01.2021 Сделать настройку "Отправлять скорость перед включением эффекта"
+                // controlViewModel.setSpeed(deviceModel, it.speed)
+                controlViewModel.setFunction(deviceModel, Constants.TypeSaber.WALS, it)
             }
         }
     }
 
-    private fun rotateFunction() {
-        mModel.rotateFunction()
-    }
-
-    private fun updateFunctionCells() {
+    private fun updateSelectedFunctionCell() {
         binding.btnFunctionSelectorOne.visibility =
             if (selectedFunctionCell == FunctionCell.FUNCTION_1) View.VISIBLE else View.INVISIBLE
         binding.btnFunctionSelectorTwo.visibility =

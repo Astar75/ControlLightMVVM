@@ -20,3 +20,6 @@ fun convertingBluetoothDeviceToDeviceModel(source : List<BluetoothDevice>): List
 
 fun colorIntToHexString(@ColorInt color: Int) =
     String.format("#%02X%02X%02X", Color.red(color), Color.green(color), Color.blue(color))
+
+fun colorIntToRgbString(@ColorInt color: Int) =
+    String.format("r%dg%db%d", Color.red(color), Color.green(color), Color.blue(color))

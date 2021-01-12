@@ -1,10 +1,12 @@
 package com.astar.osterrig.controllightmvvm.view.screen_cct_control
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.astar.osterrig.controllightmvvm.R
@@ -12,8 +14,10 @@ import com.astar.osterrig.controllightmvvm.databinding.FragmentCctControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.CctColorEntity
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.utils.DataProvider
+import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
 import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.utils.toPercentValue
+import com.astar.osterrig.controllightmvvm.view.MainActivityViewModel
 import com.astar.osterrig.controllightmvvm.view.adapters.CctColorListAdapter
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -21,11 +25,13 @@ import org.koin.android.viewmodel.ext.android.viewModel
 internal class CctControlFragment : BaseFragment<CctControlViewModel>() {
 
     override val mModel: CctControlViewModel by viewModel()
+    private val controlViewModel: MainActivityViewModel by activityViewModels()
 
     private lateinit var adapter: CctColorListAdapter
     private lateinit var binding: FragmentCctControlBinding
-
     private lateinit var deviceModel: DeviceModel
+
+    private var currentCctColor: CctColorEntity = CctColorEntity("0", 0, 0, 0, 0, 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +48,11 @@ internal class CctControlFragment : BaseFragment<CctControlViewModel>() {
         initView()
         addObservers()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        controlViewModel.setLightness(deviceModel, 255)
     }
 
     private fun initView() {
@@ -88,31 +99,54 @@ internal class CctControlFragment : BaseFragment<CctControlViewModel>() {
 
     private val cctColorListAdapterItemClickListener =
         object : CctColorListAdapter.OnItemClickListener {
-            override fun onItemClickListener(item: CctColorEntity) {
-                mModel.setColor(deviceModel, item)
-                setColor(deviceModel, item)
+            override fun onItemClickListener(cctColor: CctColorEntity) {
+                currentCctColor = cctColor
+                calculateLightnessColor(cctColor)
+                mModel.setColor(deviceModel, cctColor)
             }
         }
 
-    private val changeListener = object : SeekBar.OnSeekBarChangeListener {
+    private val changeListener = object : SeekBarChangeListener() {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
             if (seekBar == binding.sbLightness) {
                 mModel.setLightness(progress)
+                if (progress % 5 == 0) {
+                    calculateLightnessColor(currentCctColor)
+                }
             } else if (seekBar == binding.sbTint) {
                 mModel.setTint(progress)
             }
         }
 
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-
         override fun onStopTrackingTouch(seekBar: SeekBar) {
             if (seekBar == binding.sbLightness) {
                 mModel.setLightness(seekBar.progress)
-                setLightness(deviceModel, seekBar.progress)
+                calculateLightnessColor(currentCctColor)
             } else if (seekBar == binding.sbTint) {
                 mModel.setTint(seekBar.progress)
             }
         }
+    }
+
+    private fun calculateLightnessColor(cctColorEntity: CctColorEntity) {
+        val coefficientLightness = (binding.sbLightness.progress.toFloat() / 255f).toFloat()
+        var red: Float = cctColorEntity.red.toFloat()
+        var green: Float = cctColorEntity.green.toFloat()
+        var blue: Float = cctColorEntity.blue.toFloat()
+        var white: Float = cctColorEntity.white.toFloat()
+
+        red *= coefficientLightness
+        green *= coefficientLightness
+        blue *= coefficientLightness
+        white *= coefficientLightness
+
+        val newCctColor = CctColorEntity(
+            cctColorEntity.kelvin,
+            cctColorEntity.backgroundCell,
+            red.toInt(), green.toInt(), blue.toInt(), white.toInt()
+        )
+
+        controlViewModel.setCctColor(deviceModel, newCctColor)
     }
 
     companion object {

@@ -2,10 +2,10 @@ package com.astar.osterrig.controllightmvvm.view
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +18,7 @@ import com.astar.osterrig.controllightmvvm.service.BleConnectionService
 import com.astar.osterrig.controllightmvvm.service.BleServiceState
 import com.astar.osterrig.controllightmvvm.utils.LocationPermissionStatus
 import com.astar.osterrig.controllightmvvm.utils.getLocationPermissionStatus
-import com.astar.osterrig.controllightmvvm.view.viewmodels.ActivityViewModel
+import org.koin.core.definition.indexKey
 
 internal class MainActivity : AppCompatActivity() {
 
@@ -26,6 +26,8 @@ internal class MainActivity : AppCompatActivity() {
     private var mService: BleConnectionService? = null
     private var mBound = false
     lateinit var mNavigationManager: NavigationManager
+
+    private val viewModel: MainActivityViewModel by viewModels()
 
     private val mServiceConnection = object : ServiceConnection {
 
@@ -57,6 +59,7 @@ internal class MainActivity : AppCompatActivity() {
         checkLocationPermissions()
         startBleConnectionService()
         addReceiver()
+        addObservers()
     }
 
     override fun onStop() {
@@ -66,9 +69,26 @@ internal class MainActivity : AppCompatActivity() {
         removeReceiver()
     }
 
+    private fun addObservers() {
+        viewModel.connect.observe(
+            this,
+            { if (it.second) connect(it.first) else disconnect(it.first) })
+        viewModel.lightness.observe(
+            this,
+            { setLightness(deviceModel = it.first, lightness = it.second) })
+        viewModel.speed.observe(this, { setSpeed(deviceModel = it.first, speed = it.second) })
+        viewModel.color.observe(this, { setColor(deviceModel = it.first, color = it.second) })
+        viewModel.cctColor.observe(
+            this,
+            { setColor(deviceModel = it.first, colorModel = it.second) })
+        viewModel.function.observe(
+            this,
+            { setFunction(deviceModel = it.first, typeSaber = it.second, command = it.third) })
+    }
+
     private fun addReceiver() {
         val intentFilter = IntentFilter().apply {
-            addAction(BleConnectionService.ACTION_CONNECTION_STATE)
+            addAction(BleConnectionService.ACTION_BLE_STATE)
             addAction(BleConnectionService.ACTION_BATTERY_VALUE)
         }
         registerReceiver(connectionServiceReceiver, intentFilter)
@@ -80,16 +100,9 @@ internal class MainActivity : AppCompatActivity() {
 
     private val connectionServiceReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == BleConnectionService.ACTION_CONNECTION_STATE) {
-                val dataAction = intent.getParcelableExtra<BleServiceState>(BleConnectionService.ACTION_CONNECTION_STATE)
-                when (dataAction) {
-                    is BleServiceState.Connection -> {
-
-                    }
-                    is BleServiceState.Battery -> {
-
-                    }
-                }
+            if (intent.action == BleConnectionService.ACTION_BLE_STATE) {
+                val connectionState = intent.getParcelableExtra<BleServiceState>(BleConnectionService.EXTRA_BLE_STATE)
+                connectionState?.let {  viewModel.setConnectionState(it) }
             }
         }
     }
@@ -103,7 +116,8 @@ internal class MainActivity : AppCompatActivity() {
         if (getLocationPermissionStatus(true) != LocationPermissionStatus.Granted) {
             requestLocationPermission()
         } else {
-            Toast.makeText(this, getString(R.string.toast_location_permission), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_location_permission), Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -140,29 +154,37 @@ internal class MainActivity : AppCompatActivity() {
         checkLocationPermissions()
     }
 
-    fun connect(deviceModel: DeviceModel) {
-        Log.d("MainActivity", "connect")
-        mService?.connect(deviceModel)
+    private fun connect(deviceModel: DeviceModel) {
+        mService?.let { service ->
+            val isConnected = service.isConnected(deviceModel)
+            isConnected?.let {
+                if (!it) mService?.connect(deviceModel)
+            }
+        }
     }
 
-    fun disconnect(deviceModel: DeviceModel) {
+    private fun disconnect(deviceModel: DeviceModel) {
         mService?.disconnect(deviceModel)
     }
 
-    fun setLightness(deviceModel: DeviceModel, lightness: Int) {
+    private fun setLightness(deviceModel: DeviceModel, lightness: Int) {
         mService?.setLightness(deviceModel, lightness)
     }
 
-    fun setColor(deviceModel: DeviceModel, color: Int) {
+    private fun setColor(deviceModel: DeviceModel, color: Int) {
         mService?.setColor(deviceModel, color)
     }
 
-    fun setColor(deviceModel: DeviceModel, colorModel: CctColorEntity) {
+    private fun setColor(deviceModel: DeviceModel, colorModel: CctColorEntity) {
         mService?.setColor(deviceModel, colorModel)
     }
 
-    fun setFunction(deviceModel: DeviceModel, typeSaber: Int, command: String) {
+    private fun setFunction(deviceModel: DeviceModel, typeSaber: Int, command: String) {
         mService?.setFunction(deviceModel, typeSaber, command)
+    }
+
+    private fun setSpeed(deviceModel: DeviceModel, speed: Int) {
+        mService?.setSpeed(deviceModel, speed)
     }
 
     companion object {

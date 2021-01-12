@@ -56,11 +56,5 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.astar.osterrig.controllightmvvm.view.widgets.GradientView
-            android:id="@+id/gradientView"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="match_parent"
-            android:layout_height="40dp" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

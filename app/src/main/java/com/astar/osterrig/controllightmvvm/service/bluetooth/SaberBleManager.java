@@ -90,12 +90,19 @@ class SaberBleManager extends BleManager {
                         .enqueue();
                 break;
             case Constants.TypeSaber.WALS:
-                writeCharacteristic(functionGattCharacteristic, command.getBytes())
+                writeCharacteristic(functionGattCharacteristic, ("$" + command + "##").getBytes())
                         .split()
                         .enqueue();
                 break;
         }
 
+    }
+
+    public void setSpeed(int speed) {
+        writeCharacteristic(
+                speedGattCharacteristic, String.valueOf(speed).getBytes())
+                .split()
+                .enqueue();
     }
 
     @NonNull

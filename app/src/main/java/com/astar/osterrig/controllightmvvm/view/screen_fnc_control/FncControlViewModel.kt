@@ -1,14 +1,14 @@
+
 package com.astar.osterrig.controllightmvvm.view.screen_fnc_control
 
 import android.graphics.Color
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
+import androidx.annotation.ColorInt
+import androidx.lifecycle.*
 import com.astar.osterrig.controllightmvvm.model.data.FunctionWals
+import com.astar.osterrig.controllightmvvm.utils.Constants
 import com.astar.osterrig.controllightmvvm.utils.DataProvider
-import com.astar.osterrig.controllightmvvm.view.viewmodels.ConnectionControlViewModel
 
-internal class FncControlViewModel : ConnectionControlViewModel() {
+internal class FncControlViewModel : ViewModel() {
 
     private val _cellFunctionOne: MutableLiveData<FunctionWals> = MutableLiveData()
     val cellFunctionOne: LiveData<FunctionWals>
@@ -50,20 +50,40 @@ internal class FncControlViewModel : ConnectionControlViewModel() {
     val selectedFunction: LiveData<FunctionWals>
         get() = _selectedFunction
 
-    private val _rotationFunction: MutableLiveData<Boolean> = MutableLiveData(true)
-    val rotationFunction: LiveData<Boolean>
-        get() = _rotationFunction
-
     private val _lightnessPreview: MutableLiveData<Int> = MutableLiveData(0)
-    val lightnessPreview: LiveData<Int>
+    val lightnessPreviewIndicator: LiveData<Int>
         get() = _lightnessPreview
 
     private val _speedPreview: MutableLiveData<Int> = MutableLiveData(0)
-    val speedPreview: LiveData<Int>
+    val speedPreviewIndicator: LiveData<Int>
         get() = _speedPreview
 
+    private val _blockSpeedSeekBar: MutableLiveData<Boolean> = MutableLiveData(true)
+    val blockSpeedSeekBar: LiveData<Boolean>
+        get() = _blockSpeedSeekBar
+
+    private val _blockLightnessSeekBar: MutableLiveData<Boolean> = MutableLiveData(true)
+    val blockLightnessSeekBar: LiveData<Boolean>
+        get() = _blockLightnessSeekBar
+
+    private val _blockSpinnerOne: MutableLiveData<Boolean> = MutableLiveData(true)
+    val blockSpinnerOne: LiveData<Boolean>
+        get() = _blockSpinnerOne
+
+    private val _blockSpinnerTwo: MutableLiveData<Boolean> = MutableLiveData(false)
+    val blockSpinnerTwo: LiveData<Boolean>
+        get() = _blockSpinnerTwo
+
+    private val _blockSpinnerThree: MutableLiveData<Boolean> = MutableLiveData(true)
+    val blockSpinnerThree: LiveData<Boolean>
+        get() = _blockSpinnerThree
+
+    private val _blockPreviewFunction: MutableLiveData<Boolean> = MutableLiveData(true)
+    val blockPreviewFunction: LiveData<Boolean>
+        get() = _blockPreviewFunction
+
     init {
-        val dataFunction = DataProvider.getWalsFunctions()
+        val dataFunction = DataProvider.getPresetWalsFunctions()
         for (i in dataFunction.indices) {
             for (j in dataFunction[i].colorArray.indices)
                 dataFunction[i].colorArray[j] = Color.BLACK
@@ -81,10 +101,6 @@ internal class FncControlViewModel : ConnectionControlViewModel() {
         _selectedFunction.value = _cellFunctionOne.value
     }
 
-    fun rotateFunction() {
-        _rotationFunction.value?.let { _rotationFunction.value = !it }
-    }
-
     fun getStringAndColorArray(source: Array<String>): List<Pair<Int, String>> {
         val list = mutableListOf<Pair<Int, String>>()
         val colors = _selectedFunction.value!!.colorArray
@@ -94,8 +110,8 @@ internal class FncControlViewModel : ConnectionControlViewModel() {
         return list
     }
 
-    fun selectFunction(cell: Int) {
-        when (cell) {
+    fun selectFunctionCell(cell: Int) {
+        when(cell) {
             0 -> { _selectedFunction.value = _cellFunctionOne.value }
             1 -> { _selectedFunction.value = _cellFunctionTwo.value }
             2 -> { _selectedFunction.value = _cellFunctionThree.value }
@@ -106,148 +122,183 @@ internal class FncControlViewModel : ConnectionControlViewModel() {
             7 -> { _selectedFunction.value = _cellFunctionEight.value }
             8 -> { _selectedFunction.value = _cellFunctionNine.value }
         }
-        sendCommand()
+        updateSelectedCell()
     }
 
-    // TODO: 08.01.2021 Отправка команды на лампу для WALS
-    private fun sendCommand() {
-        val functionWals: FunctionWals? = selectedFunction.value
-        functionWals?.let { function ->
-            val buildCommand = "c:${function.code};"
+    fun changeDirectionFunction(cell: Int) {
+        when(cell) {
+            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { it.apply { isReverse = !isReverse } } }
+            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { it.apply { isReverse = !isReverse } } }
+            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { it.apply { isReverse = !isReverse } } }
+            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { it.apply { isReverse = !isReverse } } }
+            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { it.apply { isReverse = !isReverse } } }
+            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { it.apply { isReverse = !isReverse } } }
+            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { it.apply { isReverse = !isReverse } } }
+            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { it.apply { isReverse = !isReverse } } }
+            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { it.apply { isReverse = !isReverse } } }
         }
+        updateSelectedCell()
     }
 
-    fun setSmooth(cell: Int, isSmooth: Boolean) {
-        when (cell) {
-            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { applyChangesSmooth(it, isSmooth) } }
-            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { applyChangesSmooth(it, isSmooth) } }
-            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { applyChangesSmooth(it, isSmooth) } }
-            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { applyChangesSmooth(it, isSmooth) } }
-            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { applyChangesSmooth(it, isSmooth) } }
-            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { applyChangesSmooth(it, isSmooth) } }
-            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { applyChangesSmooth(it, isSmooth) } }
-            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { applyChangesSmooth(it, isSmooth) } }
-            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { applyChangesSmooth(it, isSmooth) } }
+    fun changeSmoothFunction(cell: Int, smooth: Boolean) {
+        when(cell) {
+            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { it.apply { it.isSmooth = smooth } } }
+            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { it.apply { it.isSmooth = smooth } } }
+            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { it.apply { it.isSmooth = smooth } } }
+            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { it.apply { it.isSmooth = smooth } } }
+            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { it.apply { it.isSmooth = smooth } } }
+            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { it.apply { it.isSmooth = smooth } } }
+            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { it.apply { it.isSmooth = smooth } } }
+            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { it.apply { it.isSmooth = smooth } } }
+            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { it.apply { it.isSmooth = smooth } } }
         }
+        updateSelectedCell()
     }
 
-    private fun applyChangesSmooth(
-        currentFunction: FunctionWals,
-        isSmooth: Boolean
-    ): FunctionWals {
-        currentFunction.isSmooth = isSmooth
-        return currentFunction
-    }
-
-    fun setColorToItemFunction(
-        cell: Int,
-        selectedColorItem: Int,
-        color: Int
-    ) {
-        when (cell) {
-            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { applyChangesColor(it, selectedColorItem, color) } }
-            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { applyChangesColor(it, selectedColorItem, color) } }
-            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { applyChangesColor(it, selectedColorItem,                 color) } }
-            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { applyChangesColor(it, selectedColorItem, color) } }
-            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { applyChangesColor(it, selectedColorItem, color) } }
-            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { applyChangesColor(it, selectedColorItem, color) } }
-            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { applyChangesColor(it, selectedColorItem, color) } }
-            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { applyChangesColor(it, selectedColorItem, color) } }
-            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { applyChangesColor(it, selectedColorItem, color) } }
+    fun changeLightnessFunction(cell: Int, lightnessValue: Int) {
+        when(cell) {
+            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { it.apply { it.lightness = lightnessValue } } }
+            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { it.apply { it.lightness = lightnessValue } } }
+            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { it.apply { it.lightness = lightnessValue } } }
+            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { it.apply { it.lightness = lightnessValue } } }
+            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { it.apply { it.lightness = lightnessValue } } }
+            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { it.apply { it.lightness = lightnessValue } } }
+            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { it.apply { it.lightness = lightnessValue } } }
+            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { it.apply { it.lightness = lightnessValue } } }
+            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { it.apply { it.lightness = lightnessValue } } }
         }
+        updateSelectedCell()
     }
 
-    private fun applyChangesColor(
-        currentFunction: FunctionWals,
-        selectedColorItem: Int,
-        color: Int
-    ): FunctionWals {
-        currentFunction.colorArray[selectedColorItem] = color
-        return currentFunction
+    fun changeSpeedFunction(cell: Int, speedValue: Int) {
+        when(cell) {
+            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { it.apply { it.speed = speedValue } } }
+            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { it.apply { it.speed = speedValue } } }
+            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { it.apply { it.speed = speedValue } } }
+            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { it.apply { it.speed = speedValue } } }
+            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { it.apply { it.speed = speedValue } } }
+            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { it.apply { it.speed = speedValue } } }
+            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { it.apply { it.speed = speedValue } } }
+            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { it.apply { it.speed = speedValue } } }
+            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { it.apply { it.speed = speedValue } } }
+        }
+        updateSelectedCell()
     }
 
-    fun updateSelectedCell() {
+    fun changeUseColorsFunction(cell: Int, useColorsCount: Int) {
+        when(cell) {
+            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { it.apply { it.useColors = useColorsCount } } }
+            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { it.apply { it.useColors = useColorsCount } } }
+            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { it.apply { it.useColors = useColorsCount } } }
+            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { it.apply { it.useColors = useColorsCount } } }
+            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { it.apply { it.useColors = useColorsCount } } }
+            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { it.apply { it.useColors = useColorsCount } } }
+            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { it.apply { it.useColors = useColorsCount } } }
+            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { it.apply { it.useColors = useColorsCount } } }
+            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { it.apply { it.useColors = useColorsCount } } }
+        }
+        updateSelectedCell()
+    }
+
+    fun changeColorFunction(cell: Int, itemColor: Int, @ColorInt colorValue: Int) {
+        when(cell) {
+            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { it.apply { it.colorArray[itemColor] = colorValue } } }
+        }
+        updateSelectedCell()
+    }
+
+    private fun updateSelectedCell() {
+        val codeFunction = _selectedFunction.value?.code
         _selectedFunction.value = _selectedFunction.value
-    }
 
-    fun setFunctionToCell(cell: Int, code: Int, name: String, icon: Int) {
-        when (cell) {
-            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { applyChangeFunction(it, code, name, icon) } }
-            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { applyChangeFunction(it, code, name, icon) } }
-            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { applyChangeFunction(it, code, name, icon) } }
-            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { applyChangeFunction(it, code, name, icon) } }
-            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { applyChangeFunction(it, code, name, icon) } }
-            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { applyChangeFunction(it, code, name, icon) } }
-            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { applyChangeFunction(it, code, name, icon) } }
-            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { applyChangeFunction(it, code, name, icon) } }
-            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { applyChangeFunction(it, code, name, icon) } }
+        codeFunction?.let { code ->
+            when(code) {
+                Constants.WalsFunctionCode.FIRE -> {
+                    _blockPreviewFunction.value = true
+                    _blockSpinnerThree.value = true
+                    _blockLightnessSeekBar.value = true
+                    _blockSpeedSeekBar.value = true
+                }
+                Constants.WalsFunctionCode.HSV -> {
+                    _blockLightnessSeekBar.value = true
+                    _blockSpeedSeekBar.value = true
+                }
+                Constants.WalsFunctionCode.FLASH_LIGHT -> {
+                    _blockPreviewFunction.value = true
+                    _blockSpinnerThree.value = true
+                    _blockLightnessSeekBar.value = true
+                    _blockSpeedSeekBar.value = true
+                }
+                Constants.WalsFunctionCode.SNAKE -> {
+                    _blockSpinnerOne.value = true
+                    _blockSpinnerTwo.value = true
+                    _blockSpinnerThree.value = true
+                    _blockLightnessSeekBar.value = true
+                    _blockSpeedSeekBar.value = true
+                    _blockPreviewFunction.value = true
+                }
+                Constants.WalsFunctionCode.PRIDE,
+                Constants.WalsFunctionCode.CYLON -> {
+                    _blockLightnessSeekBar.value = true
+                    _blockSpeedSeekBar.value = true
+                }
+                else -> {
+                    _blockSpinnerOne.value = false
+                    _blockSpinnerTwo.value = false
+                    _blockSpinnerThree.value = false
+                    _blockLightnessSeekBar.value = false
+                    _blockSpeedSeekBar.value = false
+                    _blockPreviewFunction.value = false
+                }
+            }
         }
     }
 
-    private fun applyChangeFunction(
-        currentFunction: FunctionWals,
-        code: Int, name: String, icon: Int
-    ): FunctionWals {
-        currentFunction.code = code
-        currentFunction.name = name
-        currentFunction.icon = icon
-        return currentFunction
+    fun setLightnessIndicator(progress: Int) {
+        _lightnessPreview.value = progress
     }
 
-    fun setLightness(lightness: Int) {
-        // TODO: 08.01.2021 запилить яркость
-        _lightnessPreview.value = lightness
+    fun setSpeedIndicator(progress: Int) {
+        _speedPreview.value = progress
     }
 
-    fun setSpeed(speed: Int) {
-        // TODO: 08.01.2021 запилить скорость
-        _speedPreview.value = speed
+    private fun generateColorBlack(colorArray: IntArray): IntArray {
+        for (i in colorArray.indices) {
+            colorArray[i] = Color.BLACK
+        }
+        return colorArray
     }
 
-    fun setLightnessFunction(cell: Int, lightness: Int) {
-        when (cell) {
-            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { applyLightnessFunction(it, lightness) } }
-            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { applyLightnessFunction(it, lightness) } }
-            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { applyLightnessFunction(it, lightness) } }
-            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { applyLightnessFunction(it, lightness) } }
-            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { applyLightnessFunction(it, lightness) } }
-            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { applyLightnessFunction(it, lightness) } }
-            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { applyLightnessFunction(it, lightness) } }
-            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { applyLightnessFunction(it, lightness) } }
-            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { applyLightnessFunction(it, lightness) } }
+    fun changeFunctionCell(cell: Int, functionCode: Int, functionName: String, functionIcon: Int) {
+        val function = FunctionWals(
+            code = functionCode,
+            name = functionName,
+            icon = functionIcon,
+            useColors = 2,
+            colorArray = generateColorBlack(IntArray(8)),
+            isSmooth = true,
+            isReverse = false,
+            speed = 1,
+            lightness = 255
+        )
+        when(cell) {
+            0 -> { _cellFunctionOne.value = function }
+            1 -> { _cellFunctionTwo.value = function }
+            2 -> { _cellFunctionThree.value = function }
+            3 -> { _cellFunctionFour.value = function }
+            4 -> { _cellFunctionFive.value = function }
+            5 -> { _cellFunctionSix.value = function }
+            6 -> { _cellFunctionSeven.value = function }
+            7 -> { _cellFunctionEight.value = function }
+            8 -> { _cellFunctionNine.value = function }
         }
     }
-
-    private fun applyLightnessFunction(
-        currentFunction: FunctionWals,
-        lightness: Int
-    ): FunctionWals {
-        currentFunction.lightness = lightness
-        return currentFunction
-    }
-
-    fun setSpeedFunction(cell: Int, speed: Int) {
-        when (cell) {
-            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { applySpeedFunction(it, speed) } }
-            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { applySpeedFunction(it, speed) } }
-            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { applySpeedFunction(it, speed) } }
-            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { applySpeedFunction(it, speed) } }
-            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { applySpeedFunction(it, speed) } }
-            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { applySpeedFunction(it, speed) } }
-            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { applySpeedFunction(it, speed) } }
-            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { applySpeedFunction(it, speed) } }
-            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { applySpeedFunction(it, speed) } }
-        }
-    }
-
-    private fun applySpeedFunction(
-        currentFunction: FunctionWals,
-        speed: Int
-    ): FunctionWals {
-        currentFunction.speed = speed
-        return currentFunction
-    }
-
-    override val connectionDeviceModel: DeviceModel
-        get() = TODO("Not yet implemented")
 }

@@ -9,4 +9,7 @@ interface BleConnectionManagerCallback {
     fun onCurrentLightness(bluetoothDevice: BluetoothDevice, lightness: Int)
     fun onConnected(bluetoothDevice: BluetoothDevice)
     fun onDisconnected(bluetoothDevice: BluetoothDevice)
+    fun onConnecting(bluetoothDevice: BluetoothDevice)
+    fun onFailedToConnect(bluetoothDevice: BluetoothDevice)
+    fun isConnected(device: BluetoothDevice)
 }

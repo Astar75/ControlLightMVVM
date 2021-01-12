@@ -10,6 +10,7 @@ import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentFtpControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.utils.colorIntToHexString
+import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
 import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.utils.setColorPreviewBackground
 import com.astar.osterrig.controllightmvvm.utils.toPercentValue
@@ -93,7 +94,7 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
         mModel.lightness.observe(viewLifecycleOwner, { binding.tvLightnessPreview.toPercentValue(it, 100, null) })
     }
 
-    private val rgbChangeListener = object : SeekBar.OnSeekBarChangeListener {
+    private val rgbChangeListener = object : SeekBarChangeListener() {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
             when (seekBar) {
                 binding.sbRed -> {
@@ -107,9 +108,6 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
                 }
             }
         }
-
-        override fun onStartTrackingTouch(seekBar: SeekBar) {}
-
         override fun onStopTrackingTouch(seekBar: SeekBar) {
             when (seekBar) {
                 binding.sbRed -> {
@@ -125,7 +123,7 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
         }
     }
 
-    private val hsvChangeListener = object : SeekBar.OnSeekBarChangeListener {
+    private val hsvChangeListener = object : SeekBarChangeListener() {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
             when (seekBar) {
                 binding.sbSaturation -> {
@@ -136,9 +134,6 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
                 }
             }
         }
-
-        override fun onStartTrackingTouch(seekBar: SeekBar) {}
-
         override fun onStopTrackingTouch(seekBar: SeekBar) {
             when (seekBar) {
                 binding.sbSaturation -> {

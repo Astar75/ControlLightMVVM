@@ -3,11 +3,9 @@ package com.astar.osterrig.controllightmvvm.view.screen_ftp_control
 import android.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
-import com.astar.osterrig.controllightmvvm.view.base.BaseViewModel
-import com.astar.osterrig.controllightmvvm.view.viewmodels.ConnectionControlViewModel
+import androidx.lifecycle.ViewModel
 
-internal class FtpControlViewModel : ConnectionControlViewModel() {
+internal class FtpControlViewModel : ViewModel() {
 
     val currentColor: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -98,7 +96,4 @@ internal class FtpControlViewModel : ConnectionControlViewModel() {
     private fun setCurrentColor() {
         currentColor.value = Color.rgb(red, green, blue)
     }
-
-    override val connectionDeviceModel: DeviceModel
-        get() = TODO("Not yet implemented")
 }

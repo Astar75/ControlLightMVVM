@@ -6,12 +6,15 @@ import com.astar.osterrig.controllightmvvm.model.datasource.persistence.DeviceMo
 import com.astar.osterrig.controllightmvvm.model.datasource.persistence.AppDatabase
 import com.astar.osterrig.controllightmvvm.model.repository.DeviceModelRepository
 import com.astar.osterrig.controllightmvvm.model.repository.DeviceModelRepositoryImplementation
+import com.astar.osterrig.controllightmvvm.view.NavigationManager
+import com.astar.osterrig.controllightmvvm.view.NavigationManagerImplementation
 import com.astar.osterrig.controllightmvvm.view.screen_cct_control.CctControlViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListInteractorImplementation
 import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_fnc_control.FncControlViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_fnc_rgb_control.FncRgbControlViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_ftp_control.FtpControlViewModel
+import com.astar.osterrig.controllightmvvm.view.screen_ftp_rgb_control.FtpRgbControlViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_groups.GroupListViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_rgb_control.RgbControlViewModel
 import org.koin.android.ext.koin.androidContext
@@ -25,6 +28,10 @@ val application = module {
         return AppDatabase.getInstance(context)
     }
 
+    fun provideNavigationManager(): NavigationManager {
+        return NavigationManagerImplementation.newInstance()
+    }
+
     single { provideDatabase(androidContext()) }
     single<DeviceModelRepository>(named(NAME_LOCAL)) {
         DeviceModelRepositoryImplementation(
@@ -32,6 +39,8 @@ val application = module {
             BluetoothScannerDataSourceImplementation()
         )
     }
+
+    single { provideNavigationManager() }
 }
 
 val mainScreen = module {
@@ -43,6 +52,7 @@ val mainScreen = module {
     viewModel { RgbControlViewModel() }
     viewModel { CctControlViewModel() }
     viewModel { FtpControlViewModel() }
+    viewModel { FtpRgbControlViewModel() }
     viewModel { FncControlViewModel() }
     viewModel { FncRgbControlViewModel() }
 }

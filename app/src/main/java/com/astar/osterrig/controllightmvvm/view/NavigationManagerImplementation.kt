@@ -9,6 +9,7 @@ import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListFragmen
 import com.astar.osterrig.controllightmvvm.view.screen_fnc_control.FncControlFragment
 import com.astar.osterrig.controllightmvvm.view.screen_fnc_rgb_control.FncRgbControlFragment
 import com.astar.osterrig.controllightmvvm.view.screen_ftp_control.FtpControlFragment
+import com.astar.osterrig.controllightmvvm.view.screen_ftp_rgb_control.FtpRgbControlFragment
 import com.astar.osterrig.controllightmvvm.view.screen_groups.GroupListFragment
 import com.astar.osterrig.controllightmvvm.view.screen_rgb_control.RgbControlFragment
 
@@ -43,7 +44,7 @@ internal class NavigationManagerImplementation: NavigationManager {
     }
 
     override fun navigateToFtpForRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        // navigate(FtpRgbControlFragment.newInstance(deviceModel), addToBackStack)
+        navigate(FtpRgbControlFragment.newInstance(deviceModel), addToBackStack)
     }
 
     override fun navigateToFtpForWalsControl(deviceModel: DeviceModel, addToBackStack: Boolean) {

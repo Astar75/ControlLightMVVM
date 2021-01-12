@@ -19,34 +19,15 @@ internal abstract class BaseFragment<T> : Fragment() {
         navigationManager = (activity as MainActivity).mNavigationManager
     }
 
-    protected fun connect(deviceModel: DeviceModel) {
+    /*protected fun connect(deviceModel: DeviceModel) {
         (activity as MainActivity).connect(deviceModel)
         // mainViewModel.connect(deviceModel)
-    }
+    }*/
 
-    protected fun disconnect(deviceModel: DeviceModel) {
+    /*protected fun disconnect(deviceModel: DeviceModel) {
         (activity as MainActivity).disconnect(deviceModel)
         // mainViewModel.disconnect(deviceModel)
-    }
-
-    protected fun setLightness(deviceModel: DeviceModel, lightness: Int) {
-        (activity as MainActivity).setLightness(deviceModel, lightness)
-        // mainViewModel.setLightness(deviceModel, lightness)
-    }
-
-    protected fun setColor(deviceModel: DeviceModel, color: Int) {
-        (activity as MainActivity).setColor(deviceModel, color)
-        // mainViewModel.setColor(deviceModel, color)
-    }
-
-    protected fun setColor(deviceModel: DeviceModel, colorModel: CctColorEntity) {
-        (activity as MainActivity).setColor(deviceModel, colorModel)
-        // mainViewModel.setColor(deviceModel, colorModel)
-    }
-
-    protected fun setFunction(deviceModel: DeviceModel, typeSaber: Int, command: String) {
-        (activity as MainActivity).setFunction(deviceModel, typeSaber, command)
-    }
+    }*/
 
     protected fun navigateToDeviceList() {
         (activity as MainActivity).mNavigationManager.navigateToDeviceList(false)
