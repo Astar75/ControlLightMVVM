@@ -62,6 +62,13 @@ class BleConnectionService : Service() {
         if (connectedDevices.firstOrNull { deviceModel.macAddress == it.address } == null) {
             connectedDevices.add(device)
         }
+
+        Log.d(TAG, "connect: =====================")
+        for (dev in connectedDevices) {
+            Log.d(TAG, "Device:  ${dev.address}")
+        }
+        Log.d(TAG, "connect: =====================")
+
     }
 
     fun disconnect(deviceModel: DeviceModel) {

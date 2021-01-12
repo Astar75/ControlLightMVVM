@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -66,24 +67,31 @@ internal class MainActivity : AppCompatActivity() {
         super.onStop()
         mNavigationManager.detachManager()
         unbindService(mServiceConnection)
+        removeObservers()
         removeReceiver()
     }
 
     private fun addObservers() {
-        viewModel.connect.observe(
-            this,
-            { if (it.second) connect(it.first) else disconnect(it.first) })
-        viewModel.lightness.observe(
-            this,
-            { setLightness(deviceModel = it.first, lightness = it.second) })
+        viewModel.connect.observe(this, { if (it.second) connect(it.first) else disconnect(it.first) })
+        viewModel.lightness.observe(this, { setLightness(deviceModel = it.first, lightness = it.second) })
         viewModel.speed.observe(this, { setSpeed(deviceModel = it.first, speed = it.second) })
         viewModel.color.observe(this, { setColor(deviceModel = it.first, color = it.second) })
-        viewModel.cctColor.observe(
-            this,
-            { setColor(deviceModel = it.first, colorModel = it.second) })
-        viewModel.function.observe(
-            this,
-            { setFunction(deviceModel = it.first, typeSaber = it.second, command = it.third) })
+        viewModel.cctColor.observe(this, { setColor(deviceModel = it.first, colorModel = it.second) })
+        viewModel.function.observe(this, {
+            Log.d("Main Activity", "=================================")
+            Log.d("Main Activity", "addObservers: ")
+            setFunction(deviceModel = it.first, typeSaber = it.second, command = it.third)
+        })
+    }
+
+    private fun removeObservers() {
+        viewModel.connect.removeObservers(this)
+        viewModel.cctColor.removeObservers(this)
+        viewModel.color.removeObservers(this)
+        viewModel.connectionState.removeObservers(this)
+        viewModel.function.removeObservers(this)
+        viewModel.lightness.removeObservers(this)
+        viewModel.speed.removeObservers(this)
     }
 
     private fun addReceiver() {
