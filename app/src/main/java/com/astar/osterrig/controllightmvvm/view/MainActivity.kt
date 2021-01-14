@@ -23,6 +23,8 @@ import org.koin.core.definition.indexKey
 
 internal class MainActivity : AppCompatActivity() {
 
+    // TODO: 12.01.2021 Сохранение найденных ламп в базу данных
+
     private lateinit var mBinding: ActivityMainBinding
     private var mService: BleConnectionService? = null
     private var mBound = false
@@ -77,11 +79,7 @@ internal class MainActivity : AppCompatActivity() {
         viewModel.speed.observe(this, { setSpeed(deviceModel = it.first, speed = it.second) })
         viewModel.color.observe(this, { setColor(deviceModel = it.first, color = it.second) })
         viewModel.cctColor.observe(this, { setColor(deviceModel = it.first, colorModel = it.second) })
-        viewModel.function.observe(this, {
-            Log.d("Main Activity", "=================================")
-            Log.d("Main Activity", "addObservers: ")
-            setFunction(deviceModel = it.first, typeSaber = it.second, command = it.third)
-        })
+        viewModel.function.observe(this, { setFunction(deviceModel = it.first, typeSaber = it.second, command = it.third) })
     }
 
     private fun removeObservers() {

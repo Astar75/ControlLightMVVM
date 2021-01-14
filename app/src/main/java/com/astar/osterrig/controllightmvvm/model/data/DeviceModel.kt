@@ -9,7 +9,6 @@ import kotlinx.android.parcel.Parcelize
 @Entity(tableName = "devices")
 @Parcelize
 data class DeviceModel(
-
     @PrimaryKey
     @ColumnInfo(name = "mac_address")
     val macAddress: String,
@@ -17,4 +16,6 @@ data class DeviceModel(
     val typeSaber: Int,
     @ColumnInfo(name = "group_name")
     val groupName: String
-) : Parcelable
+) : Parcelable {
+    var isChecked = false
+}

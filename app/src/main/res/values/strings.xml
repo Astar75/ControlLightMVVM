@@ -10,6 +10,7 @@
     <string name="desc_power_button">Power button</string>
     <string name="desc_battery_level">Battery level</string>
     <string name="desc_function_button">Function Button</string>
+    <string name="hint_name_device">Name device</string>
 
     <string name="devices_no_sabers">No sabers</string>
     <string name="groups_no_groups">No groups</string>
@@ -23,6 +24,8 @@
     <string name="title_tab_fnc_control">FNC</string>
     <string name="title_dialog_color_picker">Color Picker</string>
     <string name="title_dialog_functions">Function list</string>
+    <string name="title_dialog_flame_settings">Flame Settings</string>
+    <string name="title_dialog_create_group">Create group</string>
 
     <string name="tv_lightness">Lightness: %d%%</string>
     <string name="tv_tint">Tint: %d</string>
@@ -36,11 +39,16 @@
     <string name="tv_label_green">G:</string>
     <string name="tv_label_blue">B:</string>
 
+    <string name="tv_connect">Connect</string>
+    <string name="tv_sparking">Sparking</string>
+    <string name="tv_cooling">Cooling</string>
+
     <string name="preset_color_1">#ff0000</string>
     <string name="preset_color_2">#00ff00</string>
     <string name="preset_color_3">#0000ff</string>
     <string name="preset_color_4">#ff00ff</string>
     <string name="button_select">Select</string>
+
 
 
     <string-array name="function_count_colors">

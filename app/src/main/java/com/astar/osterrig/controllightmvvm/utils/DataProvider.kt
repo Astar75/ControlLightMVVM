@@ -76,14 +76,14 @@ object DataProvider {
     )
 
     fun getPresetWalsFunctions() = arrayOf(
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255),
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255),
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255),
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255),
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255),
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255),
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255),
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255),
-        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 1, 255)
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255),
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255),
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255),
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255),
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255),
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255),
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255),
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255),
+        FunctionWals(0, "None", R.drawable.ic_btn_no_color, 2, IntArray(8), true, false, 0, 0, 1, 255)
     )
 }

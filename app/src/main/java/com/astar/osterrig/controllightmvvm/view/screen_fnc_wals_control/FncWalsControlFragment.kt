@@ -1,4 +1,4 @@
-package com.astar.osterrig.controllightmvvm.view.screen_fnc_control
+package com.astar.osterrig.controllightmvvm.view.screen_fnc_wals_control
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,15 +22,17 @@ import com.astar.osterrig.controllightmvvm.view.MainActivityViewModel
 import com.astar.osterrig.controllightmvvm.view.adapters.SpinnerOptionAdapter
 import com.astar.osterrig.controllightmvvm.view.adapters.SpinnerOptionColorAdapter
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
+import com.astar.osterrig.controllightmvvm.view.dialogs.FlameSettingsDialog
 import com.astar.osterrig.controllightmvvm.view.dialogs.SelectColorDialog
 import com.astar.osterrig.controllightmvvm.view.dialogs.SelectFunctionDialog
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.include_bottom_nav_panel.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
 
-internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
+internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() {
 
-    override val mModel: FncControlViewModel by viewModel()
+    override val mModel: FncWalsControlViewModel by viewModel()
     private val controlViewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentFncControlBinding
     private lateinit var deviceModel: DeviceModel
@@ -101,7 +103,14 @@ internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
         binding.sbSpeed.setOnSeekBarChangeListener(cellSeekBarChangeListener)
 
         binding.colorAndFunctionSelector.setOnClickListener {
-            openSelectColorDialog()
+            val currentFunction = mModel.selectedFunction.value
+            currentFunction?.let {
+                if (it.code == Constants.WalsFunctionCode.FIRE) {
+                    openFlameSettingsDialog()
+                } else {
+                    openSelectColorDialog()
+                }
+            }
         }
 
         optionAdapterOne = SpinnerOptionAdapter(null)
@@ -274,6 +283,20 @@ internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
         }
     }
 
+    private fun openFlameSettingsDialog() {
+        val currentFunction = mModel.selectedFunction.value
+        currentFunction?.let {
+            FlameSettingsDialog.newInstance(it.cooling, it.sparking).apply {
+                addCallback(object : FlameSettingsDialog.Callback {
+                    override fun onChangeFlameSettings(cooling: Int, sparking: Int) {
+                        mModel.changeFlameSettings(selectedFunctionCell.ordinal, cooling, sparking)
+                        sendFunctionCommand()
+                    }
+                })
+            }.show(childFragmentManager, "flame_settings_dialog")
+        }
+    }
+
     private fun openSelectColorDialog() {
         SelectColorDialog.newInstance(null).apply {
             addCallback(object : SelectColorDialog.OnClickListener {
@@ -338,7 +361,7 @@ internal class FncControlFragment : BaseFragment<FncControlViewModel>() {
 
         @JvmStatic
         fun newInstance(deviceModel: DeviceModel) =
-            FncControlFragment().apply {
+            FncWalsControlFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(DEVICE_MODEL_ARG, deviceModel)
                 }

@@ -12,4 +12,5 @@ interface BluetoothScannerDataSource {
     fun getScanningState(): Boolean
     fun startScan()
     fun stopScan()
+    fun scanState(): Flow<Boolean>
 }

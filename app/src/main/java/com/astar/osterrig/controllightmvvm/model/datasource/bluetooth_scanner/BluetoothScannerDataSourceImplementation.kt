@@ -5,11 +5,9 @@ import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
@@ -65,8 +63,18 @@ internal class BluetoothScannerDataSourceImplementation : BluetoothScannerDataSo
 
     override fun getScanningState(): Boolean = mIsScanning
 
+    @ExperimentalCoroutinesApi
+    private val _scanningStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    @ExperimentalCoroutinesApi
+    override fun scanState(): StateFlow<Boolean> {
+        return _scanningStateFlow
+    }
+
+    @ExperimentalCoroutinesApi
     override fun startScan() {
         mIsScanning = true
+        _scanningStateFlow.value = true
         val settings = ScanSettings.Builder()
             .setLegacy(false)
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -79,8 +87,10 @@ internal class BluetoothScannerDataSourceImplementation : BluetoothScannerDataSo
         }, SCAN_DURATION)
     }
 
+    @ExperimentalCoroutinesApi
     override fun stopScan() {
         mIsScanning = false
+        _scanningStateFlow.value = false
         mScanner.stopScan(mScanCallback)
     }
 

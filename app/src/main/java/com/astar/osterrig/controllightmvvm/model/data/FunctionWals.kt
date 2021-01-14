@@ -13,6 +13,8 @@ data class FunctionWals(
     var colorArray: IntArray,                      // массив цветов
     var isSmooth: Boolean,                         // эффект размытия
     var isReverse: Boolean,                        // развернут ли эффект
+    var cooling: Int,
+    var sparking: Int,
     var speed: Int,                                // скорость эффекта
     var lightness: Int                             // яркость эффекта
 ) {

@@ -40,7 +40,7 @@ class DeviceListAdapter : RecyclerView.Adapter<DeviceListAdapter.ViewHolder>() {
                 itemClickListener?.onItemActionPowerClick(deviceModel)
             }
             binding.tvNameDevice.text = deviceModel.name
-            binding.tvAddressDevice.text = deviceModel.macAddress
+            binding.tvAddressDevice.text = if (deviceModel.groupName.isNotEmpty()) deviceModel.groupName else "Ungrouped"
         }
     }
 

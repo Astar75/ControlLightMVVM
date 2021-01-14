@@ -113,8 +113,8 @@ class MainActivityViewModel : ViewModel() {
                 WalsFunctionCode.FIRE -> {
                     buildCommand.append("c=${functionWals.code};")
                     buildCommand.append(if (functionWals.isReverse) "d=r;" else "d=l;")
-                    buildCommand.append("f_c=60;")
-                    buildCommand.append("f_s=100;")
+                    buildCommand.append("f_c=${functionWals.cooling};")
+                    buildCommand.append("f_s=${functionWals.sparking};")
                 }
             }
             buildCommand.append("ls=${functionWals.lightness};")  // яркость

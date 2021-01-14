@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 
-@Database(entities = [DeviceModel::class], version = 2, exportSchema = false)
+@Database(entities = [DeviceModel::class], version = 1, exportSchema = false)
 internal abstract class AppDatabase: RoomDatabase() {
 
     abstract fun getDevicesDao(): DeviceModelDao

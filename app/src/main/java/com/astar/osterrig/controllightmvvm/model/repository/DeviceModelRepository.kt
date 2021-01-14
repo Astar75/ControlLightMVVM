@@ -9,14 +9,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface DeviceModelRepository {
 
-    fun getDevices(): LiveData<List<DeviceModel>>
+    suspend fun getDevices(): List<DeviceModel>
     suspend fun getDeviceByMacAddress(macAddress: String): DeviceModel?
     suspend fun addDevice(device: DeviceModel)
     suspend fun deleteDevice(device: DeviceModel)
     suspend fun getGroups(): List<String>
     suspend fun getDeviceFromGroup(groupName: String): List<DeviceModel>
+    suspend fun createGroup(nameGroup: String, sabers: List<DeviceModel>)
 
     fun searchDevices(): Flow<List<BluetoothDevice>>
+    fun scanState(): Flow<Boolean>
     fun getSearchState(): Boolean
     fun startScan()
     fun stopScan()

@@ -5,8 +5,11 @@ import android.graphics.Color
 import androidx.annotation.ColorInt
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 
-fun convertingBluetoothDeviceToDeviceModel(source : List<BluetoothDevice>): List<DeviceModel> {
-    return source.map {
+fun convertingBluetoothDeviceToDeviceModel(
+    foundDeviceList : List<BluetoothDevice>,
+    savedDeviceList: List<DeviceModel>
+): List<DeviceModel> {
+    return foundDeviceList.map {
         val typeSaber = when {
             it.name.contains("TC", true) -> Constants.TypeSaber.TC
             it.name.contains("RGB") -> Constants.TypeSaber.RGB
@@ -14,7 +17,11 @@ fun convertingBluetoothDeviceToDeviceModel(source : List<BluetoothDevice>): List
             else -> Constants.TypeSaber.UNKNOWN
         }
         val nameDevice = it.name.removePrefix("Osterrig ")
-        DeviceModel(it.address, nameDevice, typeSaber, "")
+        var groupName = ""
+        for (savedDevice in savedDeviceList) {
+            if (savedDevice.macAddress == it.address) groupName = savedDevice.groupName
+        }
+        DeviceModel(it.address, nameDevice, typeSaber, groupName)
     }
 }
 

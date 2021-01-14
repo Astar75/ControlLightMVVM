@@ -5,7 +5,7 @@ import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 
 internal class DeviceModelDataSourceImplementation(private val appDatabase: AppDatabase) : DeviceModelDataSource {
 
-    override fun getDevices(): LiveData<List<DeviceModel>> {
+    override suspend fun getDevices(): List<DeviceModel> {
         return appDatabase.getDevicesDao().getDevices()
     }
 
@@ -19,6 +19,10 @@ internal class DeviceModelDataSourceImplementation(private val appDatabase: AppD
 
     override suspend fun deleteDevice(device: DeviceModel) {
         appDatabase.getDevicesDao().deleteDevice(device)
+    }
+
+    override suspend fun updateDevice(device: DeviceModel) {
+        appDatabase.getDevicesDao().updateDevice(device)
     }
 
     override suspend fun getGroups(): List<String> = appDatabase.getDevicesDao().getGroups()

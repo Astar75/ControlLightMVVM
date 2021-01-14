@@ -11,10 +11,11 @@ import com.astar.osterrig.controllightmvvm.view.NavigationManagerImplementation
 import com.astar.osterrig.controllightmvvm.view.screen_cct_control.CctControlViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListInteractorImplementation
 import com.astar.osterrig.controllightmvvm.view.screen_devices.DeviceListViewModel
-import com.astar.osterrig.controllightmvvm.view.screen_fnc_control.FncControlViewModel
+import com.astar.osterrig.controllightmvvm.view.screen_fnc_wals_control.FncWalsControlViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_fnc_rgb_control.FncRgbControlViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_ftp_control.FtpControlViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_ftp_rgb_control.FtpRgbControlViewModel
+import com.astar.osterrig.controllightmvvm.view.screen_groups.GroupListInteractorImplementation
 import com.astar.osterrig.controllightmvvm.view.screen_groups.GroupListViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_rgb_control.RgbControlViewModel
 import org.koin.android.ext.koin.androidContext
@@ -47,12 +48,13 @@ val mainScreen = module {
     //factory { MainInteractor(get(named(NAME_LOCAL))) }
     //factory { MainViewModel(get()) }
     factory { DeviceListInteractorImplementation(get(named(NAME_LOCAL))) }
+    factory { GroupListInteractorImplementation(get(named(NAME_LOCAL))) }
     viewModel { DeviceListViewModel(get()) }
-    viewModel { GroupListViewModel() }
+    viewModel { GroupListViewModel(get()) }
     viewModel { RgbControlViewModel() }
     viewModel { CctControlViewModel() }
     viewModel { FtpControlViewModel() }
     viewModel { FtpRgbControlViewModel() }
-    viewModel { FncControlViewModel() }
+    viewModel { FncWalsControlViewModel() }
     viewModel { FncRgbControlViewModel() }
 }

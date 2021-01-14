@@ -1,5 +1,5 @@
 
-package com.astar.osterrig.controllightmvvm.view.screen_fnc_control
+package com.astar.osterrig.controllightmvvm.view.screen_fnc_wals_control
 
 import android.graphics.Color
 import androidx.annotation.ColorInt
@@ -8,7 +8,7 @@ import com.astar.osterrig.controllightmvvm.model.data.FunctionWals
 import com.astar.osterrig.controllightmvvm.utils.Constants
 import com.astar.osterrig.controllightmvvm.utils.DataProvider
 
-internal class FncControlViewModel : ViewModel() {
+internal class FncWalsControlViewModel : ViewModel() {
 
     private val _cellFunctionOne: MutableLiveData<FunctionWals> = MutableLiveData()
     val cellFunctionOne: LiveData<FunctionWals>
@@ -215,6 +215,21 @@ internal class FncControlViewModel : ViewModel() {
         updateSelectedCell()
     }
 
+    fun changeFlameSettings(cell: Int, cooling: Int, sparking: Int) {
+        when(cell) {
+            0 -> { _cellFunctionOne.value = _cellFunctionOne.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+            1 -> { _cellFunctionTwo.value = _cellFunctionTwo.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+            2 -> { _cellFunctionThree.value = _cellFunctionThree.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+            3 -> { _cellFunctionFour.value = _cellFunctionFour.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+            4 -> { _cellFunctionFive.value = _cellFunctionFive.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+            5 -> { _cellFunctionSix.value = _cellFunctionSix.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+            6 -> { _cellFunctionSeven.value = _cellFunctionSeven.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+            7 -> { _cellFunctionEight.value = _cellFunctionEight.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+            8 -> { _cellFunctionNine.value = _cellFunctionNine.value?.let { it.apply { it.cooling = cooling; it.sparking = sparking } } }
+        }
+        updateSelectedCell()
+    }
+
     private fun updateSelectedCell() {
         val codeFunction = _selectedFunction.value?.code
         _selectedFunction.value = _selectedFunction.value
@@ -309,6 +324,8 @@ internal class FncControlViewModel : ViewModel() {
                 val colorArray = arrayOf(
                     Color.RED, Color.rgb(255, 180, 0), Color.WHITE
                 )
+                functionWals.cooling = 70
+                functionWals.sparking = 150
                 functionWals.useColors = 3
                 for (i in 0 until functionWals.useColors) {
                     functionWals.colorArray[i] = colorArray[i]
@@ -367,6 +384,8 @@ internal class FncControlViewModel : ViewModel() {
                 colorArray = generateColorBlack(IntArray(8)),
                 isSmooth = true,
                 isReverse = false,
+                cooling = 0,
+                sparking = 0,
                 speed = 1,
                 lightness = 255
             )
@@ -383,4 +402,6 @@ internal class FncControlViewModel : ViewModel() {
             8 -> { _cellFunctionNine.value = function }
         }
     }
+
+
 }

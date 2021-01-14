@@ -30,6 +30,7 @@ internal class DeviceListFragment : BaseFragment<DeviceListViewModel>() {
         mBinding = FragmentDevicesBinding.inflate(layoutInflater, container, false)
         initView()
         renderData()
+        mModel.getData()
         return mBinding.root
     }
 
@@ -94,20 +95,20 @@ internal class DeviceListFragment : BaseFragment<DeviceListViewModel>() {
         mModel.subscribe().observe(viewLifecycleOwner, { appState ->
             when (appState) {
                 is AppState.Success -> {
-                    val data = appState.data
+                    val data = appState.data as List<DeviceModel>
                     mAdapter.addData(data)
                     hideOrShowNoDeviceText(data.size)
                 }
                 is AppState.Error -> {
                     val data = appState.error
-                    showToastMessage(data.message)
+                    showToastMessage("Error " + data.message)
                 }
             }
         })
     }
 
     private fun hideOrShowNoDeviceText(size: Int) {
-        mBinding.tvNoDevice.visibility = if (size > 0) View.INVISIBLE else View.VISIBLE
+        mBinding.tvNoGroups.visibility = if (size > 0) View.INVISIBLE else View.VISIBLE
     }
 
     companion object {

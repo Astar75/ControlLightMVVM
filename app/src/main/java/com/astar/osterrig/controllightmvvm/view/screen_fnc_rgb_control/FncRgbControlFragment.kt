@@ -19,8 +19,9 @@ import com.astar.osterrig.controllightmvvm.utils.toPercentValue
 import com.astar.osterrig.controllightmvvm.view.MainActivityViewModel
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import com.astar.osterrig.controllightmvvm.view.dialogs.SelectFunctionDialog
-import com.astar.osterrig.controllightmvvm.view.screen_fnc_control.FncControlFragment
+import com.astar.osterrig.controllightmvvm.view.screen_fnc_wals_control.FncWalsControlFragment
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.include_bottom_nav_panel.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
@@ -36,7 +37,7 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            deviceModel = it.getParcelable(FncControlFragment.DEVICE_MODEL_ARG)!!
+            deviceModel = it.getParcelable(FncWalsControlFragment.DEVICE_MODEL_ARG)!!
         }
     }
 

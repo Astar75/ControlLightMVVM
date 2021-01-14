@@ -14,5 +14,6 @@
     <dimen name="button_function_selector_size">100dp</dimen>
     <dimen name="seekbar_default_height">40dp</dimen>
     <dimen name="dialog_title_text_size">18sp</dimen>
+    <dimen name="button_action_power_size">45dp</dimen>
 
 </resources>
