@@ -14,6 +14,8 @@ interface BleConnectionManager {
     fun setLightness(device: BluetoothDevice, lightness: Int)
     fun setSpeed(device: BluetoothDevice, speed: Int)
     fun setColor(device: BluetoothDevice, color: Int)
+    fun setColor(device: BluetoothDevice, warm: Int, cold: Int)
     fun setColor(device: BluetoothDevice, colorModel: CctColorEntity)
     fun setFunction(device: BluetoothDevice?, typeSaber: Int, command: String)
+    fun requestBatteryLevel(device: BluetoothDevice)
 }

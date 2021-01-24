@@ -14,12 +14,17 @@ interface DeviceModelRepository {
     suspend fun addDevice(device: DeviceModel)
     suspend fun deleteDevice(device: DeviceModel)
     suspend fun getGroups(): List<String>
+    suspend fun getGroupsBySaberType(saberType: Int): List<String>
     suspend fun getDeviceFromGroup(groupName: String): List<DeviceModel>
     suspend fun createGroup(nameGroup: String, sabers: List<DeviceModel>)
-
+    suspend fun renameDevice(newDevice: DeviceModel)
+    suspend fun removeGroup(nameGroup: String)
+    suspend fun renameGroup(oldGroupName: String, newGroupName: String)
+    suspend fun addSaberToGroup(newDevice: DeviceModel)
     fun searchDevices(): Flow<List<BluetoothDevice>>
     fun scanState(): Flow<Boolean>
     fun getSearchState(): Boolean
     fun startScan()
     fun stopScan()
+
 }

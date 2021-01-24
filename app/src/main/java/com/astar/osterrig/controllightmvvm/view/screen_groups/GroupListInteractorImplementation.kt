@@ -10,7 +10,7 @@ class GroupListInteractorImplementation(
     override suspend fun getGroupList(): List<String> =
         deviceModelRepository.getGroups()
 
-    override suspend fun getDeviceFromGroup(nameGroup: String) =
+    override suspend fun getDevicesFromGroup(nameGroup: String) =
         deviceModelRepository.getDeviceFromGroup(nameGroup)
 
     override suspend fun getDevices(): List<DeviceModel> =
@@ -18,5 +18,13 @@ class GroupListInteractorImplementation(
 
     override suspend fun createGroup(nameGroup: String, sabers: List<DeviceModel>) {
         deviceModelRepository.createGroup(nameGroup, sabers)
+    }
+
+    override suspend fun renameGroup(oldGroupName: String, newGroupName: String) {
+        deviceModelRepository.renameGroup(oldGroupName, newGroupName)
+    }
+
+    override suspend fun removeGroup(nameGroup: String) {
+        deviceModelRepository.removeGroup(nameGroup)
     }
 }

@@ -1,9 +1,8 @@
-package com.astar.osterrig.controllightmvvm.model.datasource.bluetooth_scanner
+package com.astar.osterrig.controllightmvvm.model.datasource.bluetoothscanner
 
 import android.bluetooth.BluetoothDevice
 import android.os.Handler
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay

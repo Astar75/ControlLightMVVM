@@ -1,20 +1,17 @@
 package com.astar.osterrig.controllightmvvm.view.adapters
 
-import android.os.Handler
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.ItemGroupSelectedDeviceBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 
 class DeviceForGroupAdapter : RecyclerView.Adapter<DeviceForGroupAdapter.ViewHolder>() {
-
     private val backupData: MutableList<DeviceModel> = mutableListOf()
     private val data: MutableList<DeviceModel> = mutableListOf()
     private val selectedDevice: MutableList<DeviceModel> = mutableListOf()
-
-    private var callback: Callback? = null
 
     fun addData(data: List<DeviceModel>) {
         this.data.clear()
@@ -22,12 +19,6 @@ class DeviceForGroupAdapter : RecyclerView.Adapter<DeviceForGroupAdapter.ViewHol
         this.backupData.clear()
         this.backupData.addAll(data)
         notifyDataSetChanged()
-    }
-
-    fun getSelectedDevices() = selectedDevice
-
-    fun addCallback(callback: Callback) {
-        this.callback = callback
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,47 +31,59 @@ class DeviceForGroupAdapter : RecyclerView.Adapter<DeviceForGroupAdapter.ViewHol
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val device = data[position]
         holder.bind(device)
-        holder.binding.cbSelectDevice.setOnCheckedChangeListener { buttonView, isChecked ->
-            data[position].isChecked = isChecked
-            Handler().postDelayed({
-                hideOrShowItems()
-                notifyDataSetChanged()
-            }, 10)
-
-        }
-        if (device.isChecked) {
-            if (!selectedDevice.contains(device)) selectedDevice.add(device)
-        } else {
-            if (selectedDevice.contains(device)) selectedDevice.remove(device)
-        }
-
     }
 
     override fun getItemCount(): Int = data.size
 
-    private fun hideOrShowItems() {
-        if (selectedDevice.size > 0) {
-            val type = selectedDevice[0].typeSaber
-            data.removeAll { it.typeSaber != type }
-        } else {
-            data.clear()
-            data.addAll(backupData)
-        }
-
-        notifyDataSetChanged()
-    }
+    fun getSelectedDevices() = selectedDevice
 
     inner class ViewHolder(val binding: ItemGroupSelectedDeviceBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bind(item: DeviceModel) {
-            binding.cbSelectDevice.text = item.name
-            binding.cbSelectDevice.isChecked = item.isChecked
+            binding.tvSaberName.text = String.format(
+                "%s - %s",
+                item.name,
+                if (item.groupName.isEmpty()) "Ungrouped" else item.groupName
+            )
 
+            if (item.isChecked) {
+                binding.itemContainer.setBackgroundColor(
+                    ContextCompat.getColor(
+                        binding.itemContainer.context,
+                        R.color.list_selected_item
+                    )
+                )
+            } else {
+                binding.itemContainer.setBackgroundColor(
+                    ContextCompat.getColor(
+                        binding.itemContainer.context,
+                        R.color.rgb_default_transparent
+                    )
+                )
+            }
+
+            binding.itemContainer.setOnClickListener {
+                onChecked(item)
+            }
         }
-    }
 
-    interface Callback {
-        fun onSelectItems(data: List<DeviceModel>)
+        private fun onChecked(item: DeviceModel) {
+            item.isChecked = !item.isChecked
+            if (item.isChecked) {
+                if (selectedDevice.isEmpty()) {
+                    data.removeAll { it.typeSaber != item.typeSaber }
+                }
+                selectedDevice.add(item)
+            } else {
+                selectedDevice.remove(item)
+                if (selectedDevice.isEmpty()) {
+                    data.clear()
+                    data.addAll(backupData)
+                }
+            }
+            notifyDataSetChanged()
+        }
     }
 }
 

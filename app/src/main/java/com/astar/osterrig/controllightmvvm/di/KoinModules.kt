@@ -1,7 +1,7 @@
 package com.astar.osterrig.controllightmvvm.di
 
 import android.content.Context
-import com.astar.osterrig.controllightmvvm.model.datasource.bluetooth_scanner.BluetoothScannerDataSourceImplementation
+import com.astar.osterrig.controllightmvvm.model.datasource.bluetoothscanner.BluetoothScannerDataSourceImplementation
 import com.astar.osterrig.controllightmvvm.model.datasource.persistence.DeviceModelDataSourceImplementation
 import com.astar.osterrig.controllightmvvm.model.datasource.persistence.AppDatabase
 import com.astar.osterrig.controllightmvvm.model.repository.DeviceModelRepository
@@ -18,6 +18,7 @@ import com.astar.osterrig.controllightmvvm.view.screen_ftp_rgb_control.FtpRgbCon
 import com.astar.osterrig.controllightmvvm.view.screen_groups.GroupListInteractorImplementation
 import com.astar.osterrig.controllightmvvm.view.screen_groups.GroupListViewModel
 import com.astar.osterrig.controllightmvvm.view.screen_rgb_control.RgbControlViewModel
+import com.astar.osterrig.controllightmvvm.view.screen_tc_control.TcControlViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -57,4 +58,5 @@ val mainScreen = module {
     viewModel { FtpRgbControlViewModel() }
     viewModel { FncWalsControlViewModel() }
     viewModel { FncRgbControlViewModel() }
+    viewModel { TcControlViewModel() }
 }

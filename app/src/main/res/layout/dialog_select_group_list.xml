@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <FrameLayout
+        android:background="@color/top_control_panel"
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/dialog_title_text_color"
+            android:textSize="@dimen/dialog_title_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/default_margin"
+        android:layout_height="150dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerGroup"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:background="@color/top_control_panel"
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+
+        <TextView
+            android:id="@+id/btnOk"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/dialog_title_text_color"
+            android:textSize="@dimen/dialog_title_text_size"
+            android:text="OK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+</LinearLayout>

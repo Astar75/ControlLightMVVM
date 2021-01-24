@@ -16,6 +16,13 @@ fun View.setColorPreviewBackground(@ColorInt color: Int) {
     this.background = newBackground
 }
 
+fun TextView.setColorPreviewBackground(@ColorInt color: Int) {
+    val newBackground = this.background.mutate()
+    newBackground.colorFilter =
+        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_ATOP)
+    this.background = newBackground
+}
+
 fun View.setBackgroundTint(@ColorRes colorRes: Int) {
     this.backgroundTintList =
         ColorStateList.valueOf(ContextCompat.getColor(this.context, colorRes))

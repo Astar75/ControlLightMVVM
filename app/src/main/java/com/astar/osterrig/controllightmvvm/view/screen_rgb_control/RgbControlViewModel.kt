@@ -9,7 +9,7 @@ import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.view.base.BaseViewModel
 import java.lang.IllegalArgumentException
 
-internal class RgbControlViewModel() : BaseViewModel() {
+internal class RgbControlViewModel : BaseViewModel() {
 
     private val _currentLightness: MutableLiveData<Int> = MutableLiveData()
     val currentLightness: LiveData<Int>
@@ -60,15 +60,4 @@ internal class RgbControlViewModel() : BaseViewModel() {
     override fun handleError(error: Throwable) {
 
     }
-}
-
-class RgbControlViewModelFactory(
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RgbControlViewModel::class.java)) {
-            return RgbControlViewModel() as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-
 }

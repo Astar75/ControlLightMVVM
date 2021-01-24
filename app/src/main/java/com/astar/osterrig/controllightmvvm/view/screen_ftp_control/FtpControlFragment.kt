@@ -6,14 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.fragment.app.activityViewModels
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentFtpControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
+import com.astar.osterrig.controllightmvvm.service.BleServiceState
 import com.astar.osterrig.controllightmvvm.utils.colorIntToHexString
 import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
 import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.utils.setColorPreviewBackground
 import com.astar.osterrig.controllightmvvm.utils.toPercentValue
+import com.astar.osterrig.controllightmvvm.view.MainActivityViewModel
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -22,7 +25,7 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
     private lateinit var binding: FragmentFtpControlBinding
 
     override val mModel: FtpControlViewModel by viewModel()
-    private lateinit var deviceModel: DeviceModel
+    private lateinit var deviceModel: ArrayList<DeviceModel>
 
     private var selectedButton: SelectButton = SelectButton.BUTTON_1
     private var selectedGradientMode: SelectButton = SelectButton.BUTTON_1
@@ -30,7 +33,7 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            deviceModel = it.getParcelable(DEVICE_MODEL_ARG)!!
+            deviceModel = it.getSerializable(DEVICE_MODEL_ARG) as ArrayList<DeviceModel>
         }
     }
 
@@ -57,11 +60,11 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
             btnFour.setOnClickListener { navigateToFncControl(deviceModel) }
         }
 
-        binding.sbRed.setOnSeekBarChangeListener(rgbChangeListener)
-        binding.sbGreen.setOnSeekBarChangeListener(rgbChangeListener)
-        binding.sbBlue.setOnSeekBarChangeListener(rgbChangeListener)
-        binding.sbSaturation.setOnSeekBarChangeListener(hsvChangeListener)
-        binding.sbLightness.setOnSeekBarChangeListener(hsvChangeListener)
+        binding.sbRedColor.setOnSeekBarChangeListener(rgbChangeListener)
+        binding.sbGreenColor.setOnSeekBarChangeListener(rgbChangeListener)
+        binding.sbBlueColor.setOnSeekBarChangeListener(rgbChangeListener)
+        binding.sbSaturationColor.setOnSeekBarChangeListener(hsvChangeListener)
+        binding.sbLightnessColor.setOnSeekBarChangeListener(hsvChangeListener)
 
         binding.viewButton1.setOnClickListener(clickListener)
         binding.viewButton2.setOnClickListener(clickListener)
@@ -80,7 +83,7 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
 
     private fun addObservers() {
         mModel.currentColor.observe(viewLifecycleOwner, {
-            binding.viewColorPreview.setColorPreviewBackground(it)
+            binding.tvColorPreview.setColorPreviewBackground(it)
             binding.tvColorPreview.text = colorIntToHexString(it)
         })
         mModel.colorOne.observe(viewLifecycleOwner, { binding.viewButton1.setBackgroundColor(it) })
@@ -94,29 +97,51 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
         mModel.lightness.observe(viewLifecycleOwner, { binding.tvLightnessPreview.toPercentValue(it, 100, null) })
     }
 
+    override fun addObserversControl() {
+        controlViewModel.connectionState.observe(viewLifecycleOwner,  {
+            connectionStateListener(it)
+        })
+    }
+
+    override fun removeObserversControl() {
+        controlViewModel.connectionState.removeObservers(viewLifecycleOwner)
+    }
+
+    private fun connectionStateListener(serviceState: BleServiceState) {
+        when(serviceState) {
+            is BleServiceState.Battery -> {
+                showBatteryLevel(serviceState.batteryValue)
+            }
+        }
+    }
+
+    private fun showBatteryLevel(batteryValue: Int) {
+        binding.topControlPanel.ivBatteryView.setBatteryLevel(batteryValue)
+    }
+
     private val rgbChangeListener = object : SeekBarChangeListener() {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
             when (seekBar) {
-                binding.sbRed -> {
+                binding.sbRedColor -> {
                     mModel.setRed(progress)
                 }
-                binding.sbGreen -> {
+                binding.sbGreenColor -> {
                     mModel.setGreen(progress)
                 }
-                binding.sbBlue -> {
+                binding.sbBlueColor -> {
                     mModel.setBlue(progress)
                 }
             }
         }
         override fun onStopTrackingTouch(seekBar: SeekBar) {
             when (seekBar) {
-                binding.sbRed -> {
+                binding.sbRedColor -> {
                     mModel.setRed(seekBar.progress)
                 }
-                binding.sbGreen -> {
+                binding.sbGreenColor -> {
                     mModel.setGreen(seekBar.progress)
                 }
-                binding.sbBlue -> {
+                binding.sbBlueColor -> {
                     mModel.setBlue(seekBar.progress)
                 }
             }
@@ -126,20 +151,20 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
     private val hsvChangeListener = object : SeekBarChangeListener() {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
             when (seekBar) {
-                binding.sbSaturation -> {
+                binding.sbSaturationColor -> {
                     mModel.setSaturation(progress)
                 }
-                binding.sbLightness -> {
+                binding.sbLightnessColor -> {
                     mModel.setLightness(progress)
                 }
             }
         }
         override fun onStopTrackingTouch(seekBar: SeekBar) {
             when (seekBar) {
-                binding.sbSaturation -> {
+                binding.sbSaturationColor -> {
                     mModel.setSaturation(seekBar.progress)
                 }
-                binding.sbLightness -> {
+                binding.sbLightnessColor -> {
                     mModel.setLightness(seekBar.progress)
                 }
             }
@@ -216,10 +241,10 @@ internal class FtpControlFragment : BaseFragment<FtpControlViewModel>() {
         private const val DEVICE_MODEL_ARG = "device_model"
 
         @JvmStatic
-        fun newInstance(deviceModel: DeviceModel) =
+        fun newInstance(deviceModel: ArrayList<DeviceModel>) =
             FtpControlFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(DEVICE_MODEL_ARG, deviceModel)
+                    putSerializable(DEVICE_MODEL_ARG, deviceModel)
                 }
             }
     }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_background"
     tools:context=".view.screen_fnc_wals_control.FncWalsControlFragment">
 
     <FrameLayout
@@ -25,7 +26,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/containerControlSettingsFunction"
+        app:layout_constraintBottom_toTopOf="@id/containerFunctionControl"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/containerTopControlPanel">
@@ -231,110 +232,125 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/containerControlSettingsFunction"
+    <FrameLayout
+        android:id="@+id/containerFunctionControl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/containerBottomNavPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Spinner
-            android:id="@+id/spParamsOne"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_margin"
-            app:layout_constraintBottom_toTopOf="@id/previewFunction"
-            app:layout_constraintEnd_toStartOf="@id/spParamsTwo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <Spinner
-            android:id="@+id/spParamsTwo"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/default_margin"
-            app:layout_constraintBottom_toBottomOf="@id/spParamsOne"
-            app:layout_constraintEnd_toStartOf="@id/spParamsThree"
-            app:layout_constraintStart_toEndOf="@id/spParamsOne"
-            app:layout_constraintTop_toTopOf="@id/spParamsOne" />
+            <Spinner
+                android:id="@+id/spParamsOne"
+                android:layout_width="70dp"
+                android:layout_height="35dp"
+                android:popupBackground="@color/default_background"
+                android:layout_margin="@dimen/default_margin"
+                android:background="@drawable/drawable_default_spinner"
+                app:layout_constraintBottom_toTopOf="@id/gradientView"
+                app:layout_constraintEnd_toStartOf="@+id/spParamsTwo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <Spinner
-            android:id="@+id/spParamsThree"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/default_margin"
-            app:layout_constraintBottom_toBottomOf="@id/spParamsOne"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/spParamsTwo"
-            app:layout_constraintTop_toTopOf="@id/spParamsOne" />
+            <Spinner
+                android:id="@+id/spParamsTwo"
+                android:layout_width="120dp"
+                android:layout_height="35dp"
+                android:popupBackground="@color/default_background"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:background="@drawable/drawable_default_spinner"
+                app:layout_constraintBottom_toBottomOf="@id/spParamsOne"
+                app:layout_constraintEnd_toStartOf="@+id/spParamsThree"
+                app:layout_constraintStart_toEndOf="@+id/spParamsOne"
+                app:layout_constraintTop_toTopOf="@id/spParamsOne" />
 
-        <com.astar.osterrig.controllightmvvm.view.widgets.GradientView
-            android:id="@+id/previewFunction"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_margin="@dimen/default_margin"
-            android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toTopOf="@id/sbLightness"
-            app:layout_constraintEnd_toStartOf="@id/colorAndFunctionSelector"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spParamsOne" />
+            <Spinner
+                android:id="@+id/spParamsThree"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:popupBackground="@color/default_background"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:background="@drawable/drawable_default_spinner"
+                app:layout_constraintBottom_toBottomOf="@id/spParamsOne"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/spParamsTwo"
+                app:layout_constraintTop_toTopOf="@id/spParamsOne" />
 
-        <View
-            android:id="@+id/colorAndFunctionSelector"
-            android:layout_width="100dp"
-            android:layout_height="0dp"
-            android:background="@color/purple_200"
-            android:layout_marginEnd="@dimen/default_margin"
-            app:layout_constraintBottom_toBottomOf="@id/previewFunction"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/previewFunction" />
+            <com.astar.osterrig.controllightmvvm.view.widgets.GradientView
+                android:id="@+id/gradientView"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="@dimen/default_margin"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:layout_marginBottom="@dimen/default_margin"
+                app:layout_constraintBottom_toTopOf="@id/sbLightnessFunction"
+                app:layout_constraintEnd_toStartOf="@id/viewSelector"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <SeekBar
-            android:id="@+id/sbLightness"
-            style="@style/SeekBarLightness"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_margin"
-            android:max="255"
-            app:layout_constraintBottom_toTopOf="@id/sbSpeed"
-            app:layout_constraintEnd_toStartOf="@id/tvLightnessIndicator"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/previewFunction" />
+            <View
+                android:id="@+id/viewSelector"
+                android:layout_width="80dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:background="@color/purple_200"
+                app:layout_constraintBottom_toBottomOf="@id/gradientView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/gradientView" />
 
-        <TextView
-            android:id="@+id/tvLightnessIndicator"
-            android:layout_width="40dp"
-            android:gravity="center"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/default_margin"
-            app:layout_constraintBottom_toBottomOf="@id/sbLightness"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/sbLightness" />
+            <SeekBar
+                android:id="@+id/sbLightnessFunction"
+                style="@style/SeekBarLightness"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin"
+                android:layout_marginBottom="@dimen/default_margin"
+                android:max="255"
+                app:layout_constraintBottom_toTopOf="@id/sbSpeedFunction"
+                app:layout_constraintEnd_toStartOf="@id/tvSpeedIndicator"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <SeekBar
-            android:id="@+id/sbSpeed"
-            style="@style/SeekBarLightness"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_margin"
-            android:max="2500"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tvSpeedIndicator"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sbLightness" />
+            <TextView
+                android:id="@+id/tvLightnessIndicator"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:gravity="center"
+                android:text="100"
+                android:textColor="#ffffff"
+                app:layout_constraintBottom_toBottomOf="@id/sbLightnessFunction"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/sbLightnessFunction" />
 
-        <TextView
-            android:id="@+id/tvSpeedIndicator"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/default_margin"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="@id/sbSpeed"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/sbSpeed" />
+            <SeekBar
+                android:id="@+id/sbSpeedFunction"
+                style="@style/SeekBarLightness"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin"
+                android:layout_marginBottom="@dimen/default_margin"
+                android:max="2500"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tvSpeedIndicator"
+                app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvSpeedIndicator"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:gravity="center"
+                android:text="100"
+                android:textColor="#ffffff"
+                app:layout_constraintBottom_toBottomOf="@id/sbSpeedFunction"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/sbSpeedFunction" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/containerBottomNavPanel"

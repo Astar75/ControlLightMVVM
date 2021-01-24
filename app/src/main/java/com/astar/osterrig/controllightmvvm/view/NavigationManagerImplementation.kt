@@ -12,6 +12,7 @@ import com.astar.osterrig.controllightmvvm.view.screen_ftp_control.FtpControlFra
 import com.astar.osterrig.controllightmvvm.view.screen_ftp_rgb_control.FtpRgbControlFragment
 import com.astar.osterrig.controllightmvvm.view.screen_groups.GroupListFragment
 import com.astar.osterrig.controllightmvvm.view.screen_rgb_control.RgbControlFragment
+import com.astar.osterrig.controllightmvvm.view.screen_tc_control.TcControlFragment
 
 internal class NavigationManagerImplementation: NavigationManager {
 
@@ -35,28 +36,32 @@ internal class NavigationManagerImplementation: NavigationManager {
         navigate(GroupListFragment.newInstance(), addToBackStack)
     }
 
-    override fun navigateToRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        navigate(RgbControlFragment.newInstance(deviceModel), addToBackStack)
+    override fun navigateToTcControl(deviceModel: List<DeviceModel>, addToBackStack: Boolean) {
+        navigate(TcControlFragment.newInstance(ArrayList(deviceModel)), addToBackStack)
     }
 
-    override fun navigateToCctControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        navigate(CctControlFragment.newInstance(deviceModel), addToBackStack)
+    override fun navigateToRgbControl(deviceModel: List<DeviceModel>, addToBackStack: Boolean) {
+        navigate(RgbControlFragment.newInstance(ArrayList(deviceModel)), addToBackStack)
     }
 
-    override fun navigateToFtpForRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        navigate(FtpRgbControlFragment.newInstance(deviceModel), addToBackStack)
+    override fun navigateToCctControl(deviceModel: List<DeviceModel>, addToBackStack: Boolean) {
+        navigate(CctControlFragment.newInstance(ArrayList(deviceModel)), addToBackStack)
     }
 
-    override fun navigateToFtpForWalsControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        navigate(FtpControlFragment.newInstance(deviceModel), addToBackStack)
+    override fun navigateToFtpForRgbControl(deviceModel: List<DeviceModel>, addToBackStack: Boolean) {
+        navigate(FtpRgbControlFragment.newInstance(ArrayList(deviceModel)), addToBackStack)
     }
 
-    override fun navigateToFncControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        navigate(FncWalsControlFragment.newInstance(deviceModel), addToBackStack)
+    override fun navigateToFtpForWalsControl(deviceModel: List<DeviceModel>, addToBackStack: Boolean) {
+        navigate(FtpControlFragment.newInstance(ArrayList(deviceModel)), addToBackStack)
     }
 
-    override fun navigateToFncRgbControl(deviceModel: DeviceModel, addToBackStack: Boolean) {
-        navigate(FncRgbControlFragment.newInstance(deviceModel), addToBackStack)
+    override fun navigateToFncControl(deviceModel: List<DeviceModel>, addToBackStack: Boolean) {
+        navigate(FncWalsControlFragment.newInstance(ArrayList(deviceModel)), addToBackStack)
+    }
+
+    override fun navigateToFncRgbControl(deviceModel: List<DeviceModel>, addToBackStack: Boolean) {
+        navigate(FncRgbControlFragment.newInstance(ArrayList(deviceModel)), addToBackStack)
     }
 
     private fun navigate(fragment: Fragment, addToBackStack: Boolean) {

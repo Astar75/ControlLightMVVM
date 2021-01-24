@@ -12,6 +12,7 @@ import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentFncControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.model.data.FunctionWals
+import com.astar.osterrig.controllightmvvm.service.BleServiceState
 import com.astar.osterrig.controllightmvvm.utils.Constants
 import com.astar.osterrig.controllightmvvm.utils.DataProvider
 import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
@@ -26,16 +27,16 @@ import com.astar.osterrig.controllightmvvm.view.dialogs.FlameSettingsDialog
 import com.astar.osterrig.controllightmvvm.view.dialogs.SelectColorDialog
 import com.astar.osterrig.controllightmvvm.view.dialogs.SelectFunctionDialog
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.include_bottom_nav_panel.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
+import kotlin.collections.ArrayList
 
 internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() {
 
     override val mModel: FncWalsControlViewModel by viewModel()
-    private val controlViewModel: MainActivityViewModel by activityViewModels()
+
     private lateinit var binding: FragmentFncControlBinding
-    private lateinit var deviceModel: DeviceModel
+    private lateinit var deviceModel: ArrayList<DeviceModel>
 
     private lateinit var optionAdapterOne: SpinnerOptionAdapter
     private lateinit var optionAdapterTwo: SpinnerOptionAdapter
@@ -46,7 +47,7 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            deviceModel = it.getParcelable(DEVICE_MODEL_ARG)!!
+            deviceModel = it.getSerializable(DEVICE_MODEL_ARG) as ArrayList<DeviceModel>
         }
     }
 
@@ -58,6 +59,7 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
         initView()
         addObservers()
         updateSelectedFunctionCell()
+        controlViewModel.setColor(deviceModel, 0, 0, 0)
         return binding.root
     }
 
@@ -84,7 +86,12 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
         binding.btnFunctionEight.setOnClickListener(selectCellClickListener)
         binding.btnFunctionNine.setOnClickListener(selectCellClickListener)
 
-        binding.previewFunction.setOnClickListener {
+        binding.gradientView.setOnClickListener {
+            mModel.changeDirectionFunction(selectedFunctionCell.ordinal)
+            sendFunctionCommand()
+        }
+
+        binding.viewSelector.setOnClickListener {
             changeDirectionFunction()
             sendFunctionCommand()
         }
@@ -99,10 +106,10 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
         binding.btnFunctionEight.setOnLongClickListener(selectFunctionLongClickListener)
         binding.btnFunctionNine.setOnLongClickListener(selectFunctionLongClickListener)
 
-        binding.sbLightness.setOnSeekBarChangeListener(cellSeekBarChangeListener)
-        binding.sbSpeed.setOnSeekBarChangeListener(cellSeekBarChangeListener)
+        binding.sbLightnessFunction.setOnSeekBarChangeListener(cellSeekBarChangeListener)
+        binding.sbSpeedFunction.setOnSeekBarChangeListener(cellSeekBarChangeListener)
 
-        binding.colorAndFunctionSelector.setOnClickListener {
+        binding.viewSelector.setOnClickListener {
             val currentFunction = mModel.selectedFunction.value
             currentFunction?.let {
                 if (it.code == Constants.WalsFunctionCode.FIRE) {
@@ -146,12 +153,34 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
         mModel.lightnessPreviewIndicator.observe(viewLifecycleOwner, { binding.tvLightnessIndicator.toPercentValue(it, 255) })
         mModel.speedPreviewIndicator.observe(viewLifecycleOwner, { binding.tvSpeedIndicator.toPercentValue(it, 2500) })
 
-        mModel.blockLightnessSeekBar.observe(viewLifecycleOwner, { binding.sbLightness.isEnabled = it })
-        mModel.blockSpeedSeekBar.observe(viewLifecycleOwner, { binding.sbSpeed.isEnabled = it })
+        mModel.blockLightnessSeekBar.observe(viewLifecycleOwner, { binding.sbLightnessFunction.isEnabled = it })
+        mModel.blockSpeedSeekBar.observe(viewLifecycleOwner, { binding.sbSpeedFunction.isEnabled = it })
         mModel.blockSpinnerOne.observe(viewLifecycleOwner, { binding.spParamsOne.isEnabled = it })
         mModel.blockSpinnerTwo.observe(viewLifecycleOwner, { binding.spParamsTwo.isEnabled = it })
         mModel.blockSpinnerThree.observe(viewLifecycleOwner, { binding.spParamsThree.isEnabled = it })
-        mModel.blockPreviewFunction.observe(viewLifecycleOwner, { binding.previewFunction.isEnabled = it })
+        mModel.blockPreviewFunction.observe(viewLifecycleOwner, { binding.gradientView.isEnabled = it })
+    }
+
+    override fun addObserversControl() {
+        controlViewModel.connectionState.observe(viewLifecycleOwner, {
+            connectionStateListener(it)
+        })
+    }
+
+    override fun removeObserversControl() {
+        controlViewModel.connectionState.removeObservers(viewLifecycleOwner)
+    }
+
+    private fun connectionStateListener(serviceState: BleServiceState) {
+        when(serviceState) {
+            is BleServiceState.Battery -> {
+                showBatteryLevel(serviceState.batteryValue)
+            }
+        }
+    }
+
+    private fun showBatteryLevel(batteryValue: Int) {
+        binding.topControlPanel.ivBatteryView.setBatteryLevel(batteryValue)
     }
 
     private fun updateIconFunctionCell(icon: Int, cellImageView: ImageView) {
@@ -160,11 +189,11 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
 
     private fun updateControlUi(functionWals: FunctionWals) {
         val functionIndicatorColors = functionWals.colorArray.toList().subList(0, functionWals.useColors)
-        binding.previewFunction.rotation = if (functionWals.isReverse) 0f else 180f
-        binding.previewFunction.setSmooth(functionWals.isSmooth)
-        binding.previewFunction.setColors(functionIndicatorColors)
-        binding.sbLightness.progress = functionWals.lightness
-        binding.sbSpeed.progress = functionWals.speed
+        binding.gradientView.rotation = if (functionWals.isReverse) 0f else 180f
+        binding.gradientView.setSmooth(functionWals.isSmooth)
+        binding.gradientView.setColors(functionIndicatorColors)
+        binding.sbLightnessFunction.progress = functionWals.lightness
+        binding.sbSpeedFunction.progress = functionWals.speed
         when (functionWals.useColors) {
             4 -> { binding.spParamsOne.setSelection(1, true) }
             8 -> { binding.spParamsOne.setSelection(2, true) }
@@ -256,13 +285,13 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
 
     private val cellSeekBarChangeListener = object : SeekBarChangeListener () {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-            if (seekBar == binding.sbLightness) {
+            if (seekBar == binding.sbLightnessFunction) {
                 mModel.setLightnessIndicator(progress)
                 if (progress % 5 == 0) {
                     mModel.changeLightnessFunction(selectedFunctionCell.ordinal, progress)
                     if (fromUser) controlViewModel.setLightness(deviceModel, progress)
                 }
-            } else if (seekBar == binding.sbSpeed) {
+            } else if (seekBar == binding.sbSpeedFunction) {
                 mModel.setSpeedIndicator(progress)
                 if (progress % 5 == 0) {
                     mModel.changeSpeedFunction(selectedFunctionCell.ordinal, progress)
@@ -272,10 +301,10 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
         }
 
         override fun onStopTrackingTouch(seekBar: SeekBar) {
-            if (seekBar == binding.sbLightness) {
+            if (seekBar == binding.sbLightnessFunction) {
                 mModel.setLightnessIndicator(seekBar.progress)
                 mModel.changeLightnessFunction(selectedFunctionCell.ordinal, seekBar.progress)
-            } else if (seekBar == binding.sbSpeed) {
+            } else if (seekBar == binding.sbSpeedFunction) {
                 mModel.setSpeedIndicator(seekBar.progress)
                 mModel.changeSpeedFunction(selectedFunctionCell.ordinal, seekBar.progress)
             }
@@ -360,10 +389,10 @@ internal class FncWalsControlFragment : BaseFragment<FncWalsControlViewModel>() 
         const val DEVICE_MODEL_ARG = "device_model"
 
         @JvmStatic
-        fun newInstance(deviceModel: DeviceModel) =
+        fun newInstance(deviceModel: ArrayList<DeviceModel>) =
             FncWalsControlFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(DEVICE_MODEL_ARG, deviceModel)
+                    putSerializable(DEVICE_MODEL_ARG, deviceModel)
                 }
             }
     }

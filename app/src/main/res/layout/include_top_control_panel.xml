@@ -26,17 +26,15 @@
         app:layout_constraintEnd_toStartOf="@+id/ivBatteryView"
         app:layout_constraintStart_toEndOf="@+id/ivDeviceList"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_btn_power_off" />
+        app:srcCompat="@drawable/ic_btn_power_gray" />
 
-    <ImageView
+    <com.astar.osterrig.controllightmvvm.view.widgets.BatteryView
         android:id="@+id/ivBatteryView"
         android:layout_width="@dimen/top_control_panel_icon_size"
         android:layout_height="@dimen/top_control_panel_icon_size"
         android:layout_marginEnd="@dimen/default_margin"
-        android:contentDescription="@string/desc_battery_level"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_battery_value" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

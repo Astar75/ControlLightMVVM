@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundDefault"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.screen_rgb_control.RgbControlFragment">
@@ -26,8 +27,8 @@
         android:id="@+id/recyclerViewCctColorList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_margin="@dimen/default_margin"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/containerLightnessControl"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,61 +42,71 @@
         android:layout_marginEnd="@dimen/default_margin"
         android:layout_marginBottom="@dimen/default_margin"
         android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/containerBottomNavPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recyclerViewCctColorList">
 
         <TextView
             android:id="@+id/tvLightness"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/tv_lightness" />
+            android:text="@string/tv_lightness"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
 
         <SeekBar
             android:id="@+id/sbLightness"
-            android:max="255"
             style="@style/SeekBarLightness"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:max="255" />
 
         <LinearLayout
-            android:layout_marginTop="@dimen/default_margin"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
+            android:orientation="horizontal">
 
             <TextView
-                android:text="@string/tv_tint_min"
-                android:layout_weight="1"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:gravity="start"
+                android:layout_weight="1"
+                android:text="@string/tv_tint_min"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tvTint"
-                android:layout_weight="10"
-                android:gravity="center"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/tv_tint" />
+                android:layout_weight="8"
+                android:gravity="center"
+                android:text="@string/tv_tint"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
 
             <TextView
-                android:text="@string/tv_tint_max"
-                android:layout_weight="1"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:gravity="end"
+                android:layout_weight="1"
+                android:text="@string/tv_tint_max"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
         </LinearLayout>
 
         <SeekBar
             android:id="@+id/sbTint"
-            android:max="100"
             style="@style/SeekBarLightness"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:max="100" />
 
     </LinearLayout>
 

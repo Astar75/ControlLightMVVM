@@ -1,12 +1,10 @@
 package com.astar.osterrig.controllightmvvm.model.repository
 
 import android.bluetooth.BluetoothDevice
-import androidx.lifecycle.LiveData
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
-import com.astar.osterrig.controllightmvvm.model.datasource.bluetooth_scanner.BluetoothScannerDataSource
+import com.astar.osterrig.controllightmvvm.model.datasource.bluetoothscanner.BluetoothScannerDataSource
 import com.astar.osterrig.controllightmvvm.model.datasource.persistence.DeviceModelDataSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 internal class DeviceModelRepositoryImplementation(
     private val dataSource: DeviceModelDataSource,
@@ -31,6 +29,9 @@ internal class DeviceModelRepositoryImplementation(
 
     override suspend fun getGroups(): List<String> = dataSource.getGroups()
 
+    override suspend fun getGroupsBySaberType(saberType: Int): List<String> =
+        dataSource.getGroupsBySaberType(saberType)
+
     override suspend fun getDeviceFromGroup(groupName: String): List<DeviceModel> =
         dataSource.getDeviceFromGroup(groupName)
 
@@ -44,6 +45,22 @@ internal class DeviceModelRepositoryImplementation(
             )
             dataSource.updateDevice(newSaber)
         }
+    }
+
+    override suspend fun addSaberToGroup(newDevice: DeviceModel) {
+        dataSource.updateDevice(newDevice)
+    }
+
+    override suspend fun renameDevice(newDevice: DeviceModel) {
+        dataSource.updateDevice(newDevice)
+    }
+
+    override suspend fun renameGroup(oldGroupName: String, newGroupName: String) {
+        dataSource.renameGroup(oldGroupName, newGroupName)
+    }
+
+    override suspend fun removeGroup(nameGroup: String) {
+        dataSource.removeGroup(nameGroup)
     }
 
     override fun startScan() {

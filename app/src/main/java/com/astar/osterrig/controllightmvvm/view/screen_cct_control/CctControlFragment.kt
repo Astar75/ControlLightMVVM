@@ -1,23 +1,21 @@
 package com.astar.osterrig.controllightmvvm.view.screen_cct_control
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentCctControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.CctColorEntity
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
+import com.astar.osterrig.controllightmvvm.service.BleServiceState
 import com.astar.osterrig.controllightmvvm.utils.DataProvider
 import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
 import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.utils.toPercentValue
-import com.astar.osterrig.controllightmvvm.view.MainActivityViewModel
 import com.astar.osterrig.controllightmvvm.view.adapters.CctColorListAdapter
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -25,18 +23,17 @@ import org.koin.android.viewmodel.ext.android.viewModel
 internal class CctControlFragment : BaseFragment<CctControlViewModel>() {
 
     override val mModel: CctControlViewModel by viewModel()
-    private val controlViewModel: MainActivityViewModel by activityViewModels()
 
     private lateinit var adapter: CctColorListAdapter
     private lateinit var binding: FragmentCctControlBinding
-    private lateinit var deviceModel: DeviceModel
+    private lateinit var deviceModel: List<DeviceModel>
 
     private var currentCctColor: CctColorEntity = CctColorEntity("0", 0, 0, 0, 0, 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            deviceModel = it.getParcelable(DEVICE_MODEL_ARG)!!
+            deviceModel = it.getSerializable(DEVICE_MODEL_ARG) as ArrayList<DeviceModel>
         }
     }
 
@@ -81,6 +78,7 @@ internal class CctControlFragment : BaseFragment<CctControlViewModel>() {
             )
             recyclerViewCctColorList.adapter = adapter
             sbLightness.setOnSeekBarChangeListener(changeListener)
+            sbTint.progress = 50
             sbTint.setOnSeekBarChangeListener(changeListener)
         }
     }
@@ -97,12 +95,33 @@ internal class CctControlFragment : BaseFragment<CctControlViewModel>() {
         })
     }
 
+    override fun addObserversControl() {
+        controlViewModel.connectionState.observe(viewLifecycleOwner, {
+            connectionStateListener(it)
+        })
+    }
+
+    override fun removeObserversControl() {
+        controlViewModel.connectionState.removeObservers(viewLifecycleOwner)
+    }
+
+    private fun connectionStateListener(serviceState: BleServiceState) {
+        when(serviceState) {
+            is BleServiceState.Battery -> {
+                showBatteryLevel(serviceState.batteryValue)
+            }
+        }
+    }
+
+    private fun showBatteryLevel(batteryValue: Int) {
+        binding.topControlPanel.ivBatteryView.setBatteryLevel(batteryValue)
+    }
+
     private val cctColorListAdapterItemClickListener =
         object : CctColorListAdapter.OnItemClickListener {
             override fun onItemClickListener(cctColor: CctColorEntity) {
                 currentCctColor = cctColor
                 calculateLightnessColor(cctColor)
-                mModel.setColor(deviceModel, cctColor)
             }
         }
 
@@ -115,6 +134,7 @@ internal class CctControlFragment : BaseFragment<CctControlViewModel>() {
                 }
             } else if (seekBar == binding.sbTint) {
                 mModel.setTint(progress)
+                controlViewModel.cctColor.value?.let { controlViewModel.setTint(deviceModel, progress, it) }
             }
         }
 
@@ -153,10 +173,10 @@ internal class CctControlFragment : BaseFragment<CctControlViewModel>() {
         private const val DEVICE_MODEL_ARG = "device_model"
 
         @JvmStatic
-        fun newInstance(deviceModel: DeviceModel) =
+        fun newInstance(deviceModel: ArrayList<DeviceModel>) =
             CctControlFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(DEVICE_MODEL_ARG, deviceModel)
+                    putSerializable(DEVICE_MODEL_ARG, deviceModel)
                 }
             }
     }

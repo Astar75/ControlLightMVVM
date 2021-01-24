@@ -5,6 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
+import java.util.*
 
 class GradientView @JvmOverloads constructor(
     context: Context,
@@ -32,7 +33,7 @@ class GradientView @JvmOverloads constructor(
             Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW
         ))
 
-        setSmooth(false)
+        setSmooth(true)
     }
 
 
@@ -101,14 +102,14 @@ class GradientView @JvmOverloads constructor(
                 0f,
                 0f,
                 width.toFloat(),
-                height.toFloat(),
+                0f,
                 _colors.toIntArray(),
                 null,
                 Shader.TileMode.CLAMP
             )
-            val matrix = Matrix()
+           /* val matrix = Matrix()
             matrix.setRotate(-14f)
-            gradient.setLocalMatrix(matrix)
+            gradient.setLocalMatrix(matrix)*/
             paint.shader = gradient
             canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
         }
@@ -138,7 +139,6 @@ class GradientView @JvmOverloads constructor(
             (width / _colors.size).toFloat()
         else
             width.toFloat()
-
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

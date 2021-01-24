@@ -1,5 +1,7 @@
 package com.astar.osterrig.controllightmvvm.view.screen_groups
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -16,6 +18,7 @@ import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
 import com.astar.osterrig.controllightmvvm.view.adapters.GroupDeviceAdapter
 import com.astar.osterrig.controllightmvvm.view.base.BaseFragment
 import com.astar.osterrig.controllightmvvm.view.dialogs.GroupSabersDialog
+import com.astar.osterrig.controllightmvvm.view.dialogs.RenameDialog
 import org.koin.android.viewmodel.ext.android.viewModel
 
 internal class GroupListFragment : BaseFragment<GroupListViewModel>() {
@@ -23,6 +26,8 @@ internal class GroupListFragment : BaseFragment<GroupListViewModel>() {
     private lateinit var mBinding: FragmentGroupsBinding
     override val mModel: GroupListViewModel by viewModel()
     private lateinit var adapter: GroupDeviceAdapter
+
+    private var oldGroupName = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +42,19 @@ internal class GroupListFragment : BaseFragment<GroupListViewModel>() {
 
     private fun initView() {
         adapter = GroupDeviceAdapter()
+        adapter.addCallback(object : GroupDeviceAdapter.Callback {
+            override fun onConnect(groupDeviceList: List<DeviceModel>) {
+                connectGroupDevices(groupDeviceList)
+            }
+
+            override fun onRenameGroup(currentName: String) {
+                renameGroup(currentName)
+            }
+
+            override fun onRemoveGroup(currentName: String) {
+                removeGroup(currentName)
+            }
+        })
         mBinding.btnAddGroup.setOnClickListener { mModel.getDevicesData() }
         mBinding.recyclerDevices.adapter = adapter
         mBinding.recyclerDevices.setHasFixedSize(true)
@@ -58,6 +76,35 @@ internal class GroupListFragment : BaseFragment<GroupListViewModel>() {
             )
             btnOne.setOnClickListener { navigateToDeviceList() }
             btnTwo.setBackgroundTint(R.color.button_active_color)
+        }
+    }
+
+    private fun renameGroup(currentName: String) {
+        oldGroupName = currentName
+        val dialog = RenameDialog.newInstance("Rename saber", oldGroupName, RenameDialog.TYPE_GROUP)
+        dialog.setTargetFragment(this, RENAME_DIALOG_CODE_REQUEST)
+        activity?.supportFragmentManager?.let { dialog.show(it, "rename_dialog") }
+    }
+
+    private fun removeGroup(groupName: String) {
+        mModel.removeGroup(groupName)
+        Handler().postDelayed({ mModel.getGroupsData() }, 100)
+    }
+
+    override fun addObserversControl() {
+
+    }
+
+    override fun removeObserversControl() {
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == RENAME_DIALOG_CODE_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                val newGroupName = data?.getStringExtra(RenameDialog.EXTRA_NEW_NAME)
+                newGroupName?.let { mModel.renameDialog(oldGroupName, it) }
+            }
         }
     }
 
@@ -96,7 +143,15 @@ internal class GroupListFragment : BaseFragment<GroupListViewModel>() {
         dialog.show(childFragmentManager, "add_group_dialog")
     }
 
+    private fun connectGroupDevices(deviceList: List<DeviceModel>) {
+        controlViewModel.connect(deviceList)
+        navigateToRgbControl(deviceList, false)
+    }
+
     companion object {
+
+        private const val RENAME_DIALOG_CODE_REQUEST = 1111
+
         @JvmStatic
         fun newInstance() =
             GroupListFragment().apply {

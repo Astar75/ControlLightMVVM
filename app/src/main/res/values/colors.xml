@@ -8,15 +8,18 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="top_control_panel">#636363</color>
-    <color name="button_color">#787878</color>
-    <color name="button_active_color">#9A9A9A</color>
+    <color name="top_control_panel">#555555</color>
+    <color name="button_color">#5C5C5C</color>
+    <color name="button_active_color">#696C7E</color>
 
     <color name="rgb_default_color_preset_1">#ff0000</color>
     <color name="rgb_default_color_preset_2">#00ff00</color>
     <color name="rgb_default_color_preset_3">#0000ff</color>
     <color name="rgb_default_color_preset_4">#ff00ff</color>
     <color name="dialog_title_text_color">#ffffff</color>
+    <color name="rgb_default_transparent">#00000000</color>
+    <color name="list_selected_item">#DFDFDF</color>
+    <color name="default_background">#2B2B2B</color>
 
 
 </resources>

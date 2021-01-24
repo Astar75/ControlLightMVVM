@@ -17,7 +17,6 @@ class OsterrigApplication : Application() {
             modules(listOf(
                 application, mainScreen
             ))
-
         }
     }
 }

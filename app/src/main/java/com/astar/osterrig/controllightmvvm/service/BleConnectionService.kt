@@ -49,94 +49,89 @@ class BleConnectionService : Service() {
         return super.onUnbind(intent)
     }
 
-    fun isConnected(deviceModel: DeviceModel): Boolean? {
-        val device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
-        device?.let { connectionManager?.isConnected(device) }
-        return connectionManager?.isConnected(device)
+    fun isConnected(macAddress: String): Boolean {
+        val device = bluetoothAdapter.getRemoteDevice(macAddress)
+        val isConnected = connectionManager?.isConnected(device)
+        return isConnected ?: false
     }
 
-    fun connect(deviceModel: DeviceModel) {
-        Log.d(TAG, "connect")
-        val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        connectionManager?.connect(device)
-        if (connectedDevices.firstOrNull { deviceModel.macAddress == it.address } == null) {
-            connectedDevices.add(device)
+    fun connect(deviceModel: List<DeviceModel>) {
+        for (device in deviceModel) {
+            val bluetoothDevice = bluetoothAdapter.getRemoteDevice(device.macAddress)
+            connectionManager?.connect(bluetoothDevice)
+            if (connectedDevices.firstOrNull { device.macAddress == it.address } == null) {
+                connectedDevices.add(bluetoothDevice)
+            }
         }
-
-        Log.d(TAG, "connect: =====================")
-        for (dev in connectedDevices) {
-            Log.d(TAG, "Device:  ${dev.address}")
-        }
-        Log.d(TAG, "connect: =====================")
-
     }
 
-    fun disconnect(deviceModel: DeviceModel) {
-        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
-        if (device != null) {
-            connectedDevices.remove(device)
+    private fun getOrCreateBluetoothDevice(device: DeviceModel): BluetoothDevice? {
+        var bluetoothDevice = connectedDevices.firstOrNull { it.address == device.macAddress }
+        if (bluetoothDevice != null) {
+            connectedDevices.remove(bluetoothDevice)
         } else {
-            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
+            bluetoothDevice = bluetoothAdapter.getRemoteDevice(device.macAddress)
         }
-        device?.let { connectionManager?.disconnect(it) }
+        return bluetoothDevice
     }
 
-    fun setLightness(deviceModel: DeviceModel, @IntRange(from = 0, to = 255) lightness: Int) {
-        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
-        if (device == null) {
-            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-            connectedDevices.add(device)
+    fun disconnect(deviceModel: List<DeviceModel>) {
+        for (device in deviceModel) {
+            val bluetoothDevice = getOrCreateBluetoothDevice(device)
+            bluetoothDevice?.let { connectionManager?.disconnect(it) }
         }
-        device?.let { connectionManager?.setLightness(it, lightness) }
     }
 
-    fun setColor(deviceModel: DeviceModel, @ColorInt color: Int) {
-        // val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        // connectionManager?.setColor(device, color)
-        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
-        if (device == null) {
-            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-            connectedDevices.add(device)
+    fun setLightness(deviceModel: List<DeviceModel>, @IntRange(from = 0, to = 255) lightness: Int) {
+        for (device in deviceModel) {
+            val bluetoothDevice = getOrCreateBluetoothDevice(device)
+            bluetoothDevice?.let { connectionManager?.setLightness(it, lightness) }
         }
-        device?.let { connectionManager?.setColor(it, color) }
     }
 
-    fun setColor(deviceModel: DeviceModel, colorModel: CctColorEntity) {
-        // val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        // connectionManager?.setColor(device, colorModel)
-        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
-        if (device == null) {
-            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-            connectedDevices.add(device)
+    fun setColor(deviceModel: List<DeviceModel>, @ColorInt color: Int) {
+        for (device in deviceModel) {
+            val bluetoothDevice = getOrCreateBluetoothDevice(device)
+            bluetoothDevice?.let { connectionManager?.setColor(it, color) }
         }
-        device?.let { connectionManager?.setColor(it, colorModel) }
     }
 
-    fun setFunction(deviceModel: DeviceModel, typeSaber: Int, command: String) {
-        // val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        // connectionManager?.setFunction(device, typeSaber, command)
-        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
-        if (device == null) {
-            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-            connectedDevices.add(device)
+    fun setColor(deviceModel: List<DeviceModel>, warm: Int, cold: Int) {
+        for (device in deviceModel) {
+            val bluetoothDevice = getOrCreateBluetoothDevice(device)
+            bluetoothDevice?.let { connectionManager?.setColor(it, warm, cold) }
         }
-        device?.let { connectionManager?.setFunction(it, typeSaber, command) }
     }
 
-    fun setSpeed(deviceModel: DeviceModel, speed: Int) {
-        // val device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-        // connectionManager?.setSpeed(device, speed)
-        var device = connectedDevices.firstOrNull { it.address == deviceModel.macAddress }
-        if (device == null) {
-            device = bluetoothAdapter.getRemoteDevice(deviceModel.macAddress)
-            connectedDevices.add(device)
+    fun setColor(deviceModel: List<DeviceModel>, colorModel: CctColorEntity) {
+        for (device in deviceModel) {
+            val bluetoothDevice = getOrCreateBluetoothDevice(device)
+            bluetoothDevice?.let { connectionManager?.setColor(it, colorModel) }
         }
-        device?.let { connectionManager?.setSpeed(it, speed) }
+    }
+
+    fun setFunction(deviceModel: List<DeviceModel>, typeSaber: Int, command: String) {
+        for (device in deviceModel) {
+            val bluetoothDevice = getOrCreateBluetoothDevice(device)
+            bluetoothDevice?.let { connectionManager?.setFunction(it, typeSaber, command) }
+        }
+    }
+
+    fun setSpeed(deviceModel: List<DeviceModel>, speed: Int) {
+        for (device in deviceModel) {
+            val bluetoothDevice = getOrCreateBluetoothDevice(device)
+            bluetoothDevice?.let { connectionManager?.setSpeed(it, speed) }
+        }
+    }
+
+    fun requestBatteryLevel(device: BluetoothDevice) {
+        connectionManager?.requestBatteryLevel(device)
     }
 
     private val bleConnectionManagerCallback = object : BleConnectionManagerCallback {
         override fun onBatteryValue(bluetoothDevice: BluetoothDevice, batteryValue: Int) {
-            //viewModel.setBatteryValue(bluetoothDevice, batteryValue)
+            val serviceState = BleServiceState.Battery(bluetoothDevice, batteryValue)
+            sendStatusBroadcast(serviceState)
         }
 
         override fun onSaberCurrentColor(bluetoothDevice: BluetoothDevice, colorStr: String) {
@@ -179,22 +174,11 @@ class BleConnectionService : Service() {
         sendBroadcast(intent)
     }
 
-    private fun sendConnectionState(bluetoothDevice: BluetoothDevice, state: Boolean) {
-        val intent = Intent(ACTION_CONNECTION_STATE)
-        intent.putExtra(ACTION_CONNECTION_STATE, BleServiceState.Connection(bluetoothDevice, state))
-        sendBroadcast(intent)
-    }
-
-
-
-
     companion object {
         const val TAG = "BleConnectionService"
 
         const val ACTION_BLE_STATE = "action_ble_state"
-        const val EXTRA_BLE_STATE = "extra_state"
-
-        const val ACTION_CONNECTION_STATE = "action_connection_state"
         const val ACTION_BATTERY_VALUE = "action_battery_value"
+        const val EXTRA_BLE_STATE = "extra_state"
     }
 }

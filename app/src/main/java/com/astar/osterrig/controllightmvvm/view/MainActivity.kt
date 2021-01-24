@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +18,6 @@ import com.astar.osterrig.controllightmvvm.service.BleConnectionService
 import com.astar.osterrig.controllightmvvm.service.BleServiceState
 import com.astar.osterrig.controllightmvvm.utils.LocationPermissionStatus
 import com.astar.osterrig.controllightmvvm.utils.getLocationPermissionStatus
-import org.koin.core.definition.indexKey
 
 internal class MainActivity : AppCompatActivity() {
 
@@ -78,18 +76,21 @@ internal class MainActivity : AppCompatActivity() {
         viewModel.lightness.observe(this, { setLightness(deviceModel = it.first, lightness = it.second) })
         viewModel.speed.observe(this, { setSpeed(deviceModel = it.first, speed = it.second) })
         viewModel.color.observe(this, { setColor(deviceModel = it.first, color = it.second) })
+        viewModel.colorTc.observe(this, { setColor(deviceModel = it.first, warm = it.second, cold = it.third) })
         viewModel.cctColor.observe(this, { setColor(deviceModel = it.first, colorModel = it.second) })
         viewModel.function.observe(this, { setFunction(deviceModel = it.first, typeSaber = it.second, command = it.third) })
+        viewModel.batteryLevel.observe(this, { requestBatteryLevel(it) })
     }
 
     private fun removeObservers() {
         viewModel.connect.removeObservers(this)
-        viewModel.cctColor.removeObservers(this)
-        viewModel.color.removeObservers(this)
-        viewModel.connectionState.removeObservers(this)
-        viewModel.function.removeObservers(this)
         viewModel.lightness.removeObservers(this)
         viewModel.speed.removeObservers(this)
+        viewModel.color.removeObservers(this)
+        viewModel.cctColor.removeObservers(this)
+        viewModel.connectionState.removeObservers(this)
+        viewModel.function.removeObservers(this)
+        viewModel.batteryLevel.removeObservers(this)
     }
 
     private fun addReceiver() {
@@ -160,37 +161,45 @@ internal class MainActivity : AppCompatActivity() {
         checkLocationPermissions()
     }
 
-    private fun connect(deviceModel: DeviceModel) {
-        mService?.let { service ->
-            val isConnected = service.isConnected(deviceModel)
-            isConnected?.let {
-                if (!it) mService?.connect(deviceModel)
-            }
-        }
+    private fun connect(deviceModel: List<DeviceModel>) {
+        mService?.connect(deviceModel)
     }
 
-    private fun disconnect(deviceModel: DeviceModel) {
+    private fun disconnect(deviceModel: List<DeviceModel>) {
         mService?.disconnect(deviceModel)
     }
 
-    private fun setLightness(deviceModel: DeviceModel, lightness: Int) {
+    private fun setLightness(deviceModel: List<DeviceModel>, lightness: Int) {
         mService?.setLightness(deviceModel, lightness)
     }
 
-    private fun setColor(deviceModel: DeviceModel, color: Int) {
+    private fun setColor(deviceModel: List<DeviceModel>, color: Int) {
         mService?.setColor(deviceModel, color)
     }
 
-    private fun setColor(deviceModel: DeviceModel, colorModel: CctColorEntity) {
+    private fun setColor(deviceModel: List<DeviceModel>, warm: Int, cold: Int) {
+        mService?.setColor(deviceModel, warm, cold)
+    }
+
+    private fun setColor(deviceModel: List<DeviceModel>, colorModel: CctColorEntity) {
         mService?.setColor(deviceModel, colorModel)
     }
 
-    private fun setFunction(deviceModel: DeviceModel, typeSaber: Int, command: String) {
+    private fun setFunction(deviceModel: List<DeviceModel>, typeSaber: Int, command: String) {
         mService?.setFunction(deviceModel, typeSaber, command)
     }
 
-    private fun setSpeed(deviceModel: DeviceModel, speed: Int) {
+    private fun setSpeed(deviceModel: List<DeviceModel>, speed: Int) {
         mService?.setSpeed(deviceModel, speed)
+    }
+
+    private fun requestBatteryLevel(device: BluetoothDevice) {
+        mService?.requestBatteryLevel(device)
+    }
+
+    fun requestIsConnected(macAddress: String): Boolean {
+        val isConnected = mService?.isConnected(macAddress)
+        return isConnected ?: false
     }
 
     companion object {

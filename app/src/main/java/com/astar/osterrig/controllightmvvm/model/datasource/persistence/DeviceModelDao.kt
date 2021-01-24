@@ -18,8 +18,17 @@ interface DeviceModelDao {
     @Update
     suspend fun updateDevice(device: DeviceModel)
 
+    @Query("UPDATE devices SET group_name = :newGroupName WHERE group_name = :oldGroupName")
+    suspend fun renameGroup(oldGroupName: String, newGroupName: String)
+
+    @Query("UPDATE devices SET group_name = '' WHERE group_name = :nameGroup")
+    suspend fun removeGroup(nameGroup: String)
+
     @Query("SELECT DISTINCT group_name FROM devices WHERE group_name IS NOT NULL")
     suspend fun getGroups(): List<String>
+
+    @Query("SELECT DISTINCT group_name FROM devices WHERE typeSaber =:saberType AND group_name IS NOT NULL")
+    suspend fun getGroupsBySaberType(saberType: Int): List<String>
 
     @Query("SELECT * FROM devices WHERE group_name = :groupName")
     suspend fun getDevicesFromGroup(groupName: String): List<DeviceModel>

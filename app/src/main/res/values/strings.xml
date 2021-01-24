@@ -26,6 +26,7 @@
     <string name="title_dialog_functions">Function list</string>
     <string name="title_dialog_flame_settings">Flame Settings</string>
     <string name="title_dialog_create_group">Create group</string>
+    <string name="title_dialog_select_group">Select Group</string>
 
     <string name="tv_lightness">Lightness: %d%%</string>
     <string name="tv_tint">Tint: %d</string>
@@ -48,6 +49,8 @@
     <string name="preset_color_3">#0000ff</string>
     <string name="preset_color_4">#ff00ff</string>
     <string name="button_select">Select</string>
+    <string name="tv_temperature">Temperature (kalvin):</string>
+    <string name="tv_label_saturation">S:</string>
 
 
 

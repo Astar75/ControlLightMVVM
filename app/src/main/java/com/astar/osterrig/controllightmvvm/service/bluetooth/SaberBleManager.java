@@ -1,15 +1,18 @@
 package com.astar.osterrig.controllightmvvm.service.bluetooth;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.astar.osterrig.controllightmvvm.model.data.CctColorEntity;
+import com.astar.osterrig.controllightmvvm.service.bluetooth.battery.BatteryLevelDataCallback;
 import com.astar.osterrig.controllightmvvm.utils.Constants;
 
 
@@ -19,9 +22,9 @@ import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
 import no.nordicsemi.android.ble.PhyRequest;
+import no.nordicsemi.android.ble.data.Data;
 
 class SaberBleManager extends BleManager {
-
 
     public static final UUID SERVICE_BATTERY_UUID = UUID.fromString("7b20eb75-30bf-40fd-9580-59770fcd0a53");
     public static final UUID BATTERY_CHAR_UUID = UUID.fromString("b0a53ff0-3f99-4ce6-9d6d-a1cc3277251a");
@@ -38,9 +41,15 @@ class SaberBleManager extends BleManager {
     private BluetoothGattCharacteristic speedGattCharacteristic;
     private BluetoothGattCharacteristic batteryGattCharacteristic;
 
+    private SaberBleManagerCallback callback;
+
     public SaberBleManager(@NonNull Context context) {
         super(context);
         Log.d("SaberBleManager", "connect");
+    }
+
+    public void addCallback(SaberBleManagerCallback callback) {
+        this.callback = callback;
     }
 
     public void disconnectDevice() {
@@ -48,7 +57,6 @@ class SaberBleManager extends BleManager {
     }
 
     public void setLightness(int lightness) {
-        Log.d("SaberBleManager", "setLightness:  " + lightness);
         writeCharacteristic(
                 lightnessGattCharacteristic, String.valueOf(lightness).getBytes())
                 .split()
@@ -57,6 +65,14 @@ class SaberBleManager extends BleManager {
 
     public void setColor(int color) {
         final String colorStr = String.format(Locale.getDefault(), "r%dg%db%d", Color.red(color), Color.green(color), Color.blue(color));
+        writeCharacteristic(
+                colorGattCharacteristic, colorStr.getBytes())
+                .split()
+                .enqueue();
+    }
+
+    public void setColor(int warm, int cold) {
+        final String colorStr = String.format(Locale.getDefault(), "w%dc%d", warm, cold);
         writeCharacteristic(
                 colorGattCharacteristic, colorStr.getBytes())
                 .split()
@@ -95,7 +111,6 @@ class SaberBleManager extends BleManager {
                         .enqueue();
                 break;
         }
-
     }
 
     public void setSpeed(int speed) {
@@ -104,6 +119,40 @@ class SaberBleManager extends BleManager {
                 .split()
                 .enqueue();
     }
+
+    private final Handler handler = new Handler();
+
+    private Runnable runnableBatteryLevel = new Runnable() {
+        @Override
+        public void run() {
+            readCharacteristic(batteryGattCharacteristic)
+                    .with(batteryLevelDataCallback)
+                    .fail((device, error) -> {
+                        Log.d(SaberBleManager.class.getSimpleName(), "Battery characteristic read error.");
+                    })
+                    .enqueue();
+
+            handler.postDelayed(this, 2000);
+        }
+    };
+
+    public void requestBatteryLevel() {
+        handler.removeCallbacks(runnableBatteryLevel);
+        handler.postDelayed(runnableBatteryLevel, 0);
+    }
+
+    private final BatteryLevelDataCallback batteryLevelDataCallback = new BatteryLevelDataCallback() {
+        @Override
+        public void onDataReceived(@NonNull BluetoothDevice device, @NonNull Data data) {
+            int batteryLevel;
+            try {
+                batteryLevel = Integer.parseInt(data.getStringValue(0));
+            } catch (NumberFormatException e) {
+                batteryLevel = 0;
+            }
+            if (callback != null) callback.onBatteryLevelValue(batteryLevel);
+        }
+    };
 
     @NonNull
     @Override
@@ -119,7 +168,7 @@ class SaberBleManager extends BleManager {
                     .add(requestMtu(507)
                             .with((device, mtu) -> Log.i("Initialize", "MTU set to " + mtu))
                             .fail((device, status) -> Log.w("Initialize", "Request MTU not supported: " + status)))
-                    .add(setPreferredPhy(PhyRequest.PHY_LE_1M_MASK, PhyRequest.PHY_LE_1M_MASK, PhyRequest.PHY_OPTION_NO_PREFERRED)
+                    .add(setPreferredPhy(PhyRequest.PHY_LE_2M_MASK, PhyRequest.PHY_LE_2M_MASK, PhyRequest.PHY_OPTION_NO_PREFERRED)
                             .fail((device, status) -> Log.i("Initialize", "")))
                     .done(device -> Log.d("Initialize", "Target initialized"))
                     .enqueue();
@@ -148,6 +197,10 @@ class SaberBleManager extends BleManager {
             colorGattCharacteristic = null;
             functionGattCharacteristic = null;
             speedGattCharacteristic = null;
+
+            callback = null;
+            handler.removeCallbacks(runnableBatteryLevel);
+            runnableBatteryLevel = null;
         }
     }
 }

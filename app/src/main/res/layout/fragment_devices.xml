@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    style="@style/BackgroundDefault"
     tools:context=".view.screen_devices.DeviceListFragment">
 
     <FrameLayout
@@ -52,7 +53,7 @@
             android:id="@+id/btnSearch"
             style="@style/ButtonActionStyle"
             android:contentDescription="@string/desc_text_search_button"
-            android:src="@drawable/ic_btn_start_scan"
+            android:src="@drawable/ic_btn_search"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

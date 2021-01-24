@@ -1,5 +1,6 @@
 package com.astar.osterrig.controllightmvvm.view.base
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 
@@ -19,6 +20,7 @@ internal abstract class BaseViewModel() : ViewModel() {
     }
 
     protected fun cancelJob() {
+        Log.d("BaseViewModel", "cancelJob called()")
         viewModelCoroutineScope.coroutineContext.cancelChildren()
     }
 

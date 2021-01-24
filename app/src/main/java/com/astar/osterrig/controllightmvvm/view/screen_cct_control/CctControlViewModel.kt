@@ -27,7 +27,7 @@ internal class CctControlViewModel : ViewModel() {
         tintPreview.value = tint - 50
     }
 
-    fun setColor(deviceModel: DeviceModel, item: CctColorEntity) {
+    fun setColor() {
 
     }
 

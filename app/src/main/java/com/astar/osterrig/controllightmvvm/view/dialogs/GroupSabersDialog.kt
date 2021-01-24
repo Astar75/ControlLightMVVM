@@ -3,8 +3,9 @@ package com.astar.osterrig.controllightmvvm.view.dialogs
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.DialogGroupSabersBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
@@ -18,12 +19,16 @@ class GroupSabersDialog : DialogFragment() {
 
     private var callback: Callback? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             deviceList.addAll(it.getSerializable(DEVICE_LIST_ARGS) as ArrayList<DeviceModel>)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        removeCallback()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -43,14 +48,13 @@ class GroupSabersDialog : DialogFragment() {
         binding.tvTitle.text = getString(R.string.title_dialog_create_group)
         binding.recyclerDevices.setHasFixedSize(true)
         binding.recyclerDevices.adapter = adapter
+        binding.recyclerDevices.addItemDecoration(
+            DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
+        )
         binding.btnOk.setOnClickListener {
             val selectedDevices = adapter.getSelectedDevices()
-            for (device in selectedDevices) {
-                Log.d("GroupSabersDialog", "Device: ${device.macAddress}")
-            }
-
-            // createGroup(selectedSabers)
-            // dismiss()
+            createGroup(selectedDevices)
+            dismiss()
         }
     }
 
@@ -61,6 +65,10 @@ class GroupSabersDialog : DialogFragment() {
 
     fun addCallback(callback: Callback) {
         this.callback = callback
+    }
+
+    private fun removeCallback() {
+        this.callback = null
     }
 
     interface Callback {

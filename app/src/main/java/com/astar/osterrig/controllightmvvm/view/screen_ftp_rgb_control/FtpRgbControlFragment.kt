@@ -1,5 +1,6 @@
 package com.astar.osterrig.controllightmvvm.view.screen_ftp_rgb_control
 
+import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentFtpRgbControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
+import com.astar.osterrig.controllightmvvm.service.BleServiceState
 import com.astar.osterrig.controllightmvvm.utils.Constants
 import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
 import com.astar.osterrig.controllightmvvm.utils.setBackgroundTint
@@ -21,15 +23,14 @@ import org.koin.android.viewmodel.ext.android.viewModel
 internal class FtpRgbControlFragment : BaseFragment<FtpRgbControlViewModel>() {
 
     override val mModel: FtpRgbControlViewModel by viewModel()
-    private val controlViewModel: MainActivityViewModel by activityViewModels()
 
     private lateinit var binding: FragmentFtpRgbControlBinding
-    private lateinit var deviceModel: DeviceModel
+    private lateinit var deviceModel: ArrayList<DeviceModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            deviceModel = it.getParcelable(DEVICE_MODEL_ARG)!!
+            deviceModel = it.getSerializable(DEVICE_MODEL_ARG) as ArrayList<DeviceModel>
         }
     }
 
@@ -46,7 +47,7 @@ internal class FtpRgbControlFragment : BaseFragment<FtpRgbControlViewModel>() {
     private fun initViews() {
         with(binding.bottomNavPanel) {
 
-            if (deviceModel.typeSaber == Constants.TypeSaber.RGB) {
+            if (deviceModel[0].typeSaber == Constants.TypeSaber.RGB) {
                 btnOne.text = context?.getString(R.string.title_tab_rgb_control)
                 btnTwo.text = context?.getString(R.string.title_tab_ftp_control)
                 btnThree.text = context?.getString(R.string.title_tab_fnc_control)
@@ -72,6 +73,28 @@ internal class FtpRgbControlFragment : BaseFragment<FtpRgbControlViewModel>() {
         mModel.red.observe(viewLifecycleOwner, { binding.tvPreviewRed.text = it.toString() })
         mModel.green.observe(viewLifecycleOwner, { binding.tvPreviewGreen.text = it.toString() })
         mModel.blue.observe(viewLifecycleOwner, { binding.tvPreviewBlue.text = it.toString() })
+    }
+
+    override fun addObserversControl() {
+        controlViewModel.connectionState.observe(viewLifecycleOwner, {
+            connectionStateListener(it)
+        })
+    }
+
+    override fun removeObserversControl() {
+        controlViewModel.connectionState.removeObservers(viewLifecycleOwner)
+    }
+
+    private fun connectionStateListener(serviceState: BleServiceState?) {
+        when (serviceState) {
+            is BleServiceState.Battery -> {
+                showBatteryLevel(serviceState.device, serviceState.batteryValue)
+            }
+        }
+    }
+
+    private fun showBatteryLevel(device: BluetoothDevice, batteryLevel: Int) {
+        binding.topControlPanel.ivBatteryView.setBatteryLevel(batteryLevel)
     }
 
     private val changeListener = object : SeekBarChangeListener() {
@@ -120,10 +143,10 @@ internal class FtpRgbControlFragment : BaseFragment<FtpRgbControlViewModel>() {
         private const val DEVICE_MODEL_ARG = "device_model"
 
         @JvmStatic
-        fun newInstance(deviceModel: DeviceModel) =
+        fun newInstance(deviceModel: ArrayList<DeviceModel>) =
             FtpRgbControlFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(DEVICE_MODEL_ARG, deviceModel)
+                    putSerializable(DEVICE_MODEL_ARG, deviceModel)
                 }
             }
     }

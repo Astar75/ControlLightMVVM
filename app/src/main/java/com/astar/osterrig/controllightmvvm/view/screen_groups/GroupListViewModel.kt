@@ -8,6 +8,7 @@ import com.astar.osterrig.controllightmvvm.model.data.AppState
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.view.base.BaseViewModel
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 internal class GroupListViewModel(private val interactor: GroupListInteractorImplementation) : BaseViewModel() {
 
@@ -33,7 +34,7 @@ internal class GroupListViewModel(private val interactor: GroupListInteractorImp
             for (groupName in groupNameList) {
                 if (groupName.isNotEmpty()) {
                     val devicesListInGroup: List<DeviceModel> =
-                        interactor.getDeviceFromGroup(groupName)
+                        interactor.getDevicesFromGroup(groupName)
                     groupRenderDataList.add(Pair(groupName, devicesListInGroup))
                 }
             }
@@ -48,9 +49,23 @@ internal class GroupListViewModel(private val interactor: GroupListInteractorImp
         }
     }
 
+    fun renameDialog(oldGroupName: String, newGroupName: String) {
+        viewModelCoroutineScope.launch {
+            interactor.renameGroup(oldGroupName, newGroupName)
+            getGroupsData()
+        }
+    }
+
+    fun removeGroup(nameGroup: String) {
+        viewModelScope.launch {
+            interactor.removeGroup(nameGroup)
+        }
+    }
+
     fun subscribe(): LiveData<AppState> {
         return mLiveDataForViewToObserve
     }
+
 
     companion object {
         const val TAG = "GroupListViewModel"

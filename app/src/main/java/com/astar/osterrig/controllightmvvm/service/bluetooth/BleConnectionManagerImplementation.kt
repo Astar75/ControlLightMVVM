@@ -44,11 +44,11 @@ class BleConnectionManagerImplementation(val context: Context) :
             }
             .enqueue()
 
-        Log.d(TAG, "==========================")
-        for (d in managedDevices) {
-            Log.d(TAG, "connect: ${d.address}")
-        }
-        Log.d(TAG, "============================")
+        manager.addCallback(SaberBleManagerCallback { batteryLevel ->
+            manager.bluetoothDevice?.let {
+                callback?.onBatteryValue(it, batteryLevel)
+            }
+        })
     }
 
     override fun disconnect(device: BluetoothDevice) {
@@ -79,6 +79,13 @@ class BleConnectionManagerImplementation(val context: Context) :
         }
     }
 
+    override fun setColor(device: BluetoothDevice, warm: Int, cold: Int) {
+        val manager = bleManagers[device]
+        manager?.let {
+            if (it.isConnected) it.setColor(warm, cold)
+        }
+    }
+
     override fun setColor(device: BluetoothDevice, colorModel: CctColorEntity) {
         val manager = bleManagers[device]
         manager?.let {
@@ -103,6 +110,11 @@ class BleConnectionManagerImplementation(val context: Context) :
     override fun isConnected(device: BluetoothDevice?): Boolean {
         val manager = bleManagers[device]
         return manager != null && manager.isConnected
+    }
+
+    override fun requestBatteryLevel(device: BluetoothDevice) {
+        val manager = bleManagers[device]
+        manager?.requestBatteryLevel()
     }
 
     override fun onDeviceConnecting(device: BluetoothDevice) {
@@ -138,15 +150,6 @@ class BleConnectionManagerImplementation(val context: Context) :
 
     companion object {
         const val TAG = "BleConnectionManager"
-
-        @Volatile
-        private var instance: BleConnectionManager? = null
-
-        /* fun newInstance(context: Context): BleConnectionManager {
-            return instance ?: BleConnectionManagerImplementation(context).also {
-                instance = it
-            }
-        }*/
 
         @JvmStatic
         fun newInstance(context: Context) = BleConnectionManagerImplementation(context)

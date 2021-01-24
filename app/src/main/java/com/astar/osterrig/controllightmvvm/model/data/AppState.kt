@@ -4,6 +4,7 @@ sealed class AppState {
 
     data class Success(val data: List<*>) : AppState()
     data class SuccessDevices(val data: List<*>): AppState()
+    data class SuccessGroups(val data: List<String>): AppState()
     data class Error(val error: Throwable) : AppState()
     object Loading : AppState()
 }

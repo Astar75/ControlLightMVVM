@@ -1,5 +1,6 @@
 package com.astar.osterrig.controllightmvvm.view.screen_fnc_rgb_control
 
+import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.astar.osterrig.controllightmvvm.R
 import com.astar.osterrig.controllightmvvm.databinding.FragmentFncRgbControlBinding
 import com.astar.osterrig.controllightmvvm.model.data.DeviceModel
 import com.astar.osterrig.controllightmvvm.model.data.FunctionRgb
+import com.astar.osterrig.controllightmvvm.service.BleServiceState
 import com.astar.osterrig.controllightmvvm.utils.Constants
 import com.astar.osterrig.controllightmvvm.utils.DataProvider
 import com.astar.osterrig.controllightmvvm.utils.listeners.SeekBarChangeListener
@@ -28,16 +30,15 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
 
     override val mModel: FncRgbControlViewModel by viewModel()
 
-    private val controlViewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentFncRgbControlBinding
 
     private var selectedFunctionCell: FunctionCell = FunctionCell.FUNCTION_1
-    private lateinit var deviceModel: DeviceModel
+    private lateinit var deviceModel: ArrayList<DeviceModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            deviceModel = it.getParcelable(FncWalsControlFragment.DEVICE_MODEL_ARG)!!
+            deviceModel = it.getSerializable(FncWalsControlFragment.DEVICE_MODEL_ARG) as ArrayList<DeviceModel>
         }
     }
 
@@ -55,7 +56,7 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
     private fun initView() {
         with(binding.bottomNavPanel) {
 
-            if (deviceModel.typeSaber == Constants.TypeSaber.RGB) {
+            if (deviceModel[0].typeSaber == Constants.TypeSaber.RGB) {
                 btnOne.text = context?.getString(R.string.title_tab_rgb_control)
                 btnTwo.text = context?.getString(R.string.title_tab_ftp_control)
                 btnThree.text = context?.getString(R.string.title_tab_fnc_control)
@@ -63,7 +64,7 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
 
                 btnOne.setOnClickListener { navigateToRgbControl(deviceModel, false) }
                 btnTwo.setOnClickListener { navigateToFtpForRgbControl(deviceModel) }
-            } else if (deviceModel.typeSaber == Constants.TypeSaber.WALS) {
+            } else if (deviceModel[0].typeSaber == Constants.TypeSaber.WALS) {
                 btnOne.text = context?.getString(R.string.title_tab_rgb_control)
                 btnTwo.text = context?.getString(R.string.title_tab_cct_control)
                 btnThree.text = context?.getString(R.string.title_tab_ftp_control)
@@ -196,6 +197,28 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
         })
     }
 
+    override fun addObserversControl() {
+        controlViewModel.connectionState.observe(viewLifecycleOwner, {
+            connectionStateListener(it)
+        })
+    }
+
+    override fun removeObserversControl() {
+        controlViewModel.connectionState.removeObservers(viewLifecycleOwner)
+    }
+
+    private fun connectionStateListener(serviceState: BleServiceState?) {
+        when (serviceState) {
+            is BleServiceState.Battery -> {
+                showBatteryLevel(serviceState.device, serviceState.batteryValue)
+            }
+        }
+    }
+
+    private fun showBatteryLevel(device: BluetoothDevice, batteryLevel: Int) {
+        binding.topControlPanel.ivBatteryView.setBatteryLevel(batteryLevel)
+    }
+
     private fun sendFunction(codeCommand: FunctionRgb) {
         controlViewModel.setLightness(deviceModel, codeCommand.lightness)
         controlViewModel.setSpeed(deviceModel, codeCommand.speed)
@@ -251,10 +274,10 @@ internal class FncRgbControlFragment : BaseFragment<FncRgbControlViewModel>() {
         private const val DEVICE_MODEL_ARG = "device_model"
 
         @JvmStatic
-        fun newInstance(deviceModel: DeviceModel) =
+        fun newInstance(deviceModel: ArrayList<DeviceModel>) =
             FncRgbControlFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(DEVICE_MODEL_ARG, deviceModel)
+                    putSerializable(DEVICE_MODEL_ARG, deviceModel)
                 }
             }
     }
